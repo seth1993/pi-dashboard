@@ -246,8 +246,15 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     
+    // Initialize window.currentQuestion
+    window.currentQuestion = "Ready to start?";
+    
     window.answerQuestion = async function(answer) {
       const question = window.currentQuestion;
+      if (!question || question === "Ready to start?") {
+        alert('Question not loaded yet. Wait a moment and try again.');
+        return;
+      }
       const timestamp = new Date();
       
       try {
@@ -431,10 +438,10 @@
       let newQuestion;
       do {
         newQuestion = pool[Math.floor(Math.random() * pool.length)];
-      } while (newQuestion === currentQuestion && pool.length > 1);
+      } while (newQuestion === window.currentQuestion && pool.length > 1);
       
-      currentQuestion = newQuestion;
-      document.getElementById('qa-question').textContent = currentQuestion;
+      window.currentQuestion = newQuestion;
+      document.getElementById('qa-question').textContent = window.currentQuestion;
     }
     
     updateTime();
