@@ -250,6 +250,7 @@
     window.currentQuestion = "Ready to start?";
     
     window.answerQuestion = async function(answer) {
+      alert('Button clicked! answer=' + answer + ', question=' + window.currentQuestion);
       console.log('answerQuestion called, question:', window.currentQuestion);
       const question = window.currentQuestion;
       const timestamp = new Date();
