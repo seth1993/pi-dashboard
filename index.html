@@ -444,7 +444,7 @@
     updateDaysUntil();
     loadBalance();
     loadWeather();
-    loadQuestion();
+    setTimeout(loadQuestion, 100); // Small delay to ensure DOM is ready
     
     setTimeout(() => location.reload(), 30000);
     setInterval(updateTime, 1000);
