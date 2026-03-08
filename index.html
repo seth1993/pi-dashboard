@@ -246,7 +246,7 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     
-    // Initialize question
+    // Make currentQuestion available globally
     window.currentQuestion = "Ready to start?";
     
     window.answerQuestion = async function(answer) {
