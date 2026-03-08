@@ -21,7 +21,7 @@
       color: #fff;
     }
     
-    /* Background: 30% gradient, 70% image */
+    /* Background */
     .background {
       position: fixed;
       top: 0;
@@ -69,11 +69,6 @@
       justify-content: center;
     }
     
-    /* Big time */
-    .time-section {
-      margin-bottom: 40px;
-    }
-    
     .big-time { 
       font-size: 14rem; 
       font-weight: 100;
@@ -84,16 +79,14 @@
       background-clip: text;
     }
     
-    /* Stats in a row */
     .stats-row {
       display: flex;
       gap: 80px;
       align-items: flex-start;
+      margin-top: 40px;
     }
     
-    .stat {
-      text-align: left;
-    }
+    .stat { text-align: left; }
     
     .stat-value {
       font-size: 4.5rem;
@@ -109,20 +102,8 @@
       margin-top: 8px;
     }
     
-    .stat.days .stat-value {
-      color: #f39c12;
-    }
-    
-    .stat.balance .stat-value {
-      color: var(--owl-yellow);
-    }
-    
-    /* Weather stat */
-    .stat.weather .stat-value {
-      display: flex;
-      align-items: baseline;
-      gap: 15px;
-    }
+    .stat.days .stat-value { color: #f39c12; }
+    .stat.balance .stat-value { color: var(--owl-yellow); }
     
     .weather-text {
       font-size: 1.5rem;
@@ -136,7 +117,6 @@
       font-weight: bold;
     }
     
-    /* Interactive Q&A Section */
     .qa-section {
       margin-top: 50px;
       max-width: 900px;
@@ -176,25 +156,11 @@
       transform: translateY(-2px);
     }
     
-    .qa-btn.yes {
-      border-color: rgba(46, 204, 113, 0.5);
-    }
+    .qa-btn.yes { border-color: rgba(46, 204, 113, 0.5); }
+    .qa-btn.yes:hover { background: rgba(46, 204, 113, 0.2); border-color: #2ecc71; }
+    .qa-btn.no { border-color: rgba(231, 76, 60, 0.5); }
+    .qa-btn.no:hover { background: rgba(231, 76, 60, 0.2); border-color: #e74c3c; }
     
-    .qa-btn.yes:hover {
-      background: rgba(46, 204, 113, 0.2);
-      border-color: #2ecc71;
-    }
-    
-    .qa-btn.no {
-      border-color: rgba(231, 76, 60, 0.5);
-    }
-    
-    .qa-btn.no:hover {
-      background: rgba(231, 76, 60, 0.2);
-      border-color: #e74c3c;
-    }
-    
-    /* Owl */
     .owl {
       position: absolute;
       bottom: 40px;
@@ -205,7 +171,6 @@
       text-transform: uppercase;
     }
     
-    /* Mobile */
     @media (max-width: 900px) {
       .background-gradient { width: 50%; }
       .background-image { width: 50%; }
@@ -222,7 +187,6 @@
   </style>
 </head>
 <body>
-  <!-- Background layers -->
   <div class="background">
     <div class="background-gradient"></div>
     <div class="background-image" id="bg-image"></div>
@@ -230,12 +194,8 @@
   
   <div class="overlay">
     <div class="container">
-      <!-- Big Time -->
-      <div class="time-section">
-        <div class="big-time" id="time"></div>
-      </div>
+      <div class="big-time" id="time"></div>
       
-      <!-- Stats row -->
       <div class="stats-row">
         <div class="stat days">
           <div class="stat-value" id="days-until">--</div>
@@ -256,7 +216,6 @@
         </div>
       </div>
       
-      <!-- Interactive Q&A -->
       <div class="qa-section">
         <div class="qa-question" id="qa-question">Loading...</div>
         <div class="qa-buttons">
@@ -269,19 +228,52 @@
     <div class="owl">OWL</div>
   </div>
   
-  <script>
-    // static.photos categories
-    const dayCategoryMap = {
-      0: 'nature',
-      1: 'mountains',
-      2: 'ocean',
-      3: 'city',
-      4: 'forest',
-      5: 'beach',
-      6: 'travel'
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+    import { getFirestore, collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+    
+    // Firebase config - using the dashboard's project
+    const firebaseConfig = {
+      apiKey: "AIzaSyDEJHudLpT2A",
+      authDomain: "sethexample11.firebaseapp.com",
+      projectId: "sethexample11",
+      storageBucket: "sethexample11.appspot.com",
+      messagingSenderId: "78193417902",
+      appId: "1:78193417902:web:placeholder"
     };
     
-    // Weather to text mapping
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    
+    window.answerQuestion = async function(answer) {
+      const question = window.currentQuestion;
+      const timestamp = new Date();
+      
+      try {
+        await addDoc(collection(db, 'responses'), {
+          question: question,
+          answer: answer,
+          timestamp: timestamp.toISOString(),
+          dayOfWeek: timestamp.getDay(),
+          hour: timestamp.getHours()
+        });
+        console.log('Answer saved:', { question, answer, timestamp });
+      } catch(e) {
+        console.error('Error saving answer:', e);
+      }
+      
+      // Load next question
+      loadQuestion();
+    };
+  </script>
+  
+  <script>
+    const dayCategoryMap = {
+      0: 'nature', 1: 'mountains', 2: 'ocean', 3: 'city',
+      4: 'forest', 5: 'beach', 6: 'travel'
+    };
+    
     const weatherMap = {
       'Sunny': { text: 'SUNNY', category: 'sunset' },
       'Partly cloudy': { text: 'PARTLY CLOUDY', category: 'clouds' },
@@ -299,52 +291,90 @@
       'Fog': { text: 'FOG', category: 'clouds' }
     };
     
-    // Q&A Questions pool
-    const questions = [
-      "Ready to crush it today?",
-      "Feeling motivated to run?",
-      "Is today a long run day?",
-      "Got your running shoes on?",
-      "Ready to beat yesterday?",
-      "Feeling strong today?",
-      "Time to push harder?",
-      "Ready for the trail?",
-      "In the zone today?",
-      "Ready to go the distance?",
-      "Got the energy?",
-      "Ready to make it count?",
-      "Feeling adventurous?",
-      "Ready to log some miles?",
-      "In it to win it?"
+    // Day-relevant + project questions
+    const dayQuestions = {
+      0: [ // Sunday - rest/recovery + planning
+        "Ready to plan the week ahead?",
+        "Feeling recharged from the weekend?",
+        "Time to review this week's goals?",
+        "Ready to prep for a productive week?",
+        "Want to tackle a big project today?"
+      ],
+      1: [ // Monday - fresh start
+        "Ready to start the week strong?",
+        "Feeling motivated for Monday?",
+        "Time to crush this week's goals?",
+        "Ready to make Monday count?",
+        "Want to get the week rolling with a run?"
+      ],
+      2: [ // Tuesday - midweek momentum
+        "Midweek momentum building?",
+        "Ready to keep the week going?",
+        "Time for a solid training run?",
+        "Feeling the midweek energy?",
+        "Want to check off some tasks today?"
+      ],
+      3: [ // Thursday - approaching weekend
+        "Almost to the weekend - ready to push?",
+        "Time to finish the week strong?",
+        "Feeling ready for a longer run?",
+        "Want to wrap up pending projects?",
+        "Ready to make Thursday count?"
+      ],
+      4: [ // Friday - week wrap-up
+        "Ready to finish the week strong?",
+        "Time to wrap up this week's tasks?",
+        "Feeling the Friday energy?",
+        "Want to start the weekend with a win?",
+        "Ready to celebrate the week's wins?"
+      ],
+      5: [ // Saturday - weekend + long run
+        "Is today a long run day?",
+        "Ready for a weekend adventure?",
+        "Feeling strong for Saturday?",
+        "Time to log some serious miles?",
+        "Ready to enjoy the weekend?"
+      ],
+      6: [ // Sunday - rest + reflection
+        "Ready for an easy recovery run?",
+        "Time to reflect on the week?",
+        "Feeling rested and ready?",
+        "Want to set up next week for success?",
+        "Ready to enjoy a relaxed Sunday?"
+      ]
+    };
+    
+    const projectQuestions = [
+      "Time to work on BidFolder?",
+      "Ready to push ProposalPulse forward?",
+      "Want to make progress on the Pi dashboard?",
+      "Time to tackle that LinkedIn post?",
+      "Ready to do some cold outreach?",
+      "Want to record that demo video?",
+      "Time to build something cool?",
+      "Ready to check off a task?"
     ];
     
     let currentQuestion = "";
-    let answersHistory = [];
     
-    // === BACKGROUND IMAGE ===
     function setBackgroundImage(category) {
       document.getElementById('bg-image').style.backgroundImage = 
         `url('https://static.photos/1920x1080/${category}')`;
     }
     
-    // === TIME (24H) ===
     function updateTime() {
       const now = new Date();
-      const hours = now.getHours();
-      const minutes = now.getMinutes();
-      const timeStr = `${hours}:${minutes.toString().padStart(2, '0')}`;
-      document.getElementById('time').textContent = timeStr;
+      document.getElementById('time').textContent = 
+        `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
     }
     
-    // === DAYS UNTIL R3 ===
     function updateDaysUntil() {
       const r3Date = new Date('2026-05-09');
       const today = new Date();
-      const daysUntil = Math.ceil((r3Date - today) / (1000 * 60 * 60 * 24));
-      document.getElementById('days-until').textContent = daysUntil;
+      document.getElementById('days-until').textContent = 
+        Math.ceil((r3Date - today) / (1000 * 60 * 60 * 24));
     }
     
-    // === LLM BALANCE ===
     async function loadBalance() {
       try {
         const res = await fetch('https://raw.githubusercontent.com/seth1993/pi-dashboard/main/balance.json', { cache: 'no-cache' });
@@ -355,7 +385,6 @@
       } catch(e) { console.log('Balance:', e.message); }
     }
     
-    // === WEATHER ===
     function loadWeather() {
       fetch('https://wttr.in/?format=j1')
         .then(r => r.json())
@@ -363,9 +392,7 @@
           const w = d.current_condition[0];
           const tempF = Math.round(w.temp_F);
           const weatherDesc = w.weatherDesc[0].value;
-          
           let weatherInfo = weatherMap[weatherDesc] || { text: 'CLEAR', category: 'nature' };
-          
           document.getElementById('weather-icon').textContent = weatherInfo.text;
           document.getElementById('weather-temp').textContent = tempF + '°';
           setBackgroundImage(weatherInfo.category);
@@ -378,43 +405,33 @@
         });
     }
     
-    // === Q&A ===
     function loadQuestion() {
-      // Pick a random question different from current
+      const dayOfWeek = new Date().getDay();
+      const dayQ = dayQuestions[dayOfWeek] || dayQuestions[0];
+      
+      // Mix of day-specific and project questions (70% day, 30% project)
+      let pool;
+      if (Math.random() < 0.7) {
+        pool = dayQ;
+      } else {
+        pool = projectQuestions;
+      }
+      
       let newQuestion;
       do {
-        newQuestion = questions[Math.floor(Math.random() * questions.length)];
-      } while (newQuestion === currentQuestion && questions.length > 1);
+        newQuestion = pool[Math.floor(Math.random() * pool.length)];
+      } while (newQuestion === currentQuestion && pool.length > 1);
       
       currentQuestion = newQuestion;
       document.getElementById('qa-question').textContent = currentQuestion;
     }
     
-    async function answerQuestion(answer) {
-      // Record answer
-      const response = {
-        question: currentQuestion,
-        answer: answer,
-        timestamp: new Date().toISOString()
-      };
-      
-      answersHistory.push(response);
-      
-      // For now, log to console and show next question
-      console.log('Answer recorded:', response);
-      
-      // Load next question
-      loadQuestion();
-    }
-    
-    // === INIT ===
     updateTime();
     updateDaysUntil();
     loadBalance();
     loadWeather();
     loadQuestion();
     
-    // Auto-refresh
     setTimeout(() => location.reload(), 30000);
     setInterval(updateTime, 1000);
   </script>
