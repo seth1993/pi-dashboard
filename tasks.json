@@ -2,6 +2,7 @@
   "total": 20,
   "done": 6,
   "pending": 14,
+  "onMyMind": "Thinking about the next R3 training run",
   "projects": [
     { "name": "Identify BidFolder targets", "status": "inbox" },
     { "name": "BidFolder one-pager PDF", "status": "inbox" },

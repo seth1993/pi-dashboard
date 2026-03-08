@@ -494,8 +494,19 @@
     }
     
     // === SET "ON MY MIND" ===
-    function setOnMyMind() {
-      // Pick based on day for variety
+    async function setOnMyMind() {
+      try {
+        const res = await fetch('https://raw.githubusercontent.com/seth1993/pi-dashboard/main/tasks.json', { cache: 'no-cache' });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.onMyMind && data.onMyMind.trim() !== '') {
+            document.getElementById('on-my-mind').textContent = data.onMyMind;
+            return;
+          }
+        }
+      } catch(e) { console.log('onMyMind fetch:', e.message); }
+      
+      // Fallback to random if not set
       const dayIndex = new Date().getDay();
       const index = (dayIndex + Math.floor(Math.random() * 3)) % onMyMindOptions.length;
       document.getElementById('on-my-mind').textContent = onMyMindOptions[index];
@@ -554,7 +565,7 @@
     setBackgroundImage();
     updateTime();
     setQuote();
-    setOnMyMind();
+    setOnMyMind(); // async - will fetch from tasks.json if available
     updateRunTraining();
     loadBalance();
     loadTasks();
