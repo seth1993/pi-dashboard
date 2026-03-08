@@ -248,15 +248,18 @@
     
     // Make currentQuestion available globally
     window.currentQuestion = "Ready to start?";
+    console.log('Init: currentQuestion =', window.currentQuestion);
     
     window.answerQuestion = async function(answer) {
-      alert('Button clicked! answer=' + answer + ', question=' + window.currentQuestion);
-      console.log('answerQuestion called, question:', window.currentQuestion);
+      console.log('answerQuestion called with:', answer);
+      console.log('currentQuestion:', window.currentQuestion);
+      alert('Clicked: ' + answer + ' | Question: ' + window.currentQuestion);
+      
       const question = window.currentQuestion;
-      const timestamp = new Date();
       const timestamp = new Date();
       
       try {
+        console.log('Saving to Firestore:', { question, answer, timestamp });
         const docRef = await addDoc(collection(db, 'responses'), {
           question: question,
           answer: answer,
