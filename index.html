@@ -6,7 +6,6 @@
   <title>Juan's Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
@@ -21,7 +20,6 @@
       color: #fff;
     }
     
-    /* Background */
     .background {
       position: fixed;
       top: 0;
@@ -122,6 +120,17 @@
       max-width: 900px;
     }
     
+    .qa-statement {
+      font-size: 2rem;
+      font-weight: 300;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 10px;
+    }
+    
+    .qa-statement-highlight {
+      color: var(--owl-yellow);
+    }
+    
     .qa-question {
       font-size: 3.5rem;
       font-weight: 300;
@@ -180,6 +189,7 @@
       .stat-value { font-size: 3rem; }
       .weather-temp { font-size: 3rem; }
       .qa-section { margin-top: 30px; }
+      .qa-statement { font-size: 1.5rem; }
       .qa-question { font-size: 2rem; }
       .qa-buttons { flex-direction: column; gap: 15px; }
       .qa-btn { padding: 20px 40px; font-size: 1.5rem; min-width: auto; }
@@ -217,10 +227,11 @@
       </div>
       
       <div class="qa-section">
+        <div class="qa-statement" id="qa-statement"></div>
         <div class="qa-question" id="qa-question">Loading...</div>
         <div class="qa-buttons">
-          <button class="qa-btn yes" onclick="answerQuestion('yes')">Yes</button>
-          <button class="qa-btn no" onclick="answerQuestion('no')">No</button>
+          <button class="qa-btn yes" id="btn-yes">Yes</button>
+          <button class="qa-btn no" id="btn-no">No</button>
         </div>
       </div>
     </div>
@@ -231,9 +242,8 @@
   <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-    import { getFirestore, collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+    import { getFirestore, collection, addDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
     
-    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyDEJHudLpT2A",
       authDomain: "sethexample11.firebaseapp.com",
@@ -246,29 +256,26 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     
-    // Make currentQuestion available globally
-    window.currentQuestion = "Ready to start?";
-    console.log('Init: currentQuestion =', window.currentQuestion);
+    window.currentQA = null;
     
     window.answerQuestion = async function(answer) {
-      console.log('answerQuestion called with:', answer);
-      console.log('currentQuestion:', window.currentQuestion);
-      alert('Clicked: ' + answer + ' | Question: ' + window.currentQuestion);
+      if (!window.currentQA) {
+        alert('No question loaded');
+        return;
+      }
       
-      const question = window.currentQuestion;
       const timestamp = new Date();
       
       try {
-        console.log('Saving to Firestore:', { question, answer, timestamp });
-        const docRef = await addDoc(collection(db, 'responses'), {
-          question: question,
+        await addDoc(collection(db, 'responses'), {
+          statement: window.currentQA.statement,
+          question: window.currentQA.question,
+          type: window.currentQA.type,
           answer: answer,
           timestamp: timestamp.toISOString(),
           dayOfWeek: timestamp.getDay(),
           hour: timestamp.getHours()
         });
-        
-        alert('Saved! Doc ID: ' + docRef.id);
         
         // Visual feedback
         const btn = event.target;
@@ -279,15 +286,18 @@
         setTimeout(() => {
           btn.textContent = originalText;
           btn.style.background = '';
-        }, 1000);
+          loadQuestion();
+        }, 800);
         
-        // Load next question
-        loadQuestion();
       } catch(e) {
-        console.error('Error saving answer:', e);
-        alert('Error saving: ' + e.message);
+        console.error('Error saving:', e);
+        alert('Error: ' + e.message);
       }
     };
+    
+    // Attach click handlers
+    document.getElementById('btn-yes').onclick = () => window.answerQuestion('yes');
+    document.getElementById('btn-no').onclick = () => window.answerQuestion('no');
   </script>
   
   <script>
@@ -313,71 +323,53 @@
       'Fog': { text: 'FOG', category: 'clouds' }
     };
     
-    // Day-relevant + project questions
-    const dayQuestions = {
-      0: [ // Sunday - rest/recovery + planning
-        "Ready to plan the week ahead?",
-        "Feeling recharged from the weekend?",
-        "Time to review this week's goals?",
-        "Ready to prep for a productive week?",
-        "Want to tackle a big project today?"
+    // Q&A Pool from skill
+    const qaPool = {
+      tasks: [
+        { statement: "I need help with", question: "Can you help me with BidFolder outreach?", type: "task" },
+        { statement: "I need help with", question: "Can you help me finalize the ProposalPulse landing page?", type: "task" },
+        { statement: "I need help with", question: "Can you help me set up analytics for the dashboard?", type: "task" },
+        { statement: "I need help with", question: "Can you help me write a cold email template?", type: "task" },
+        { statement: "I need help with", question: "Can you help me review this code?", type: "task" },
+        { statement: "I need help with", question: "Can you help me plan next week's tasks?", type: "task" }
       ],
-      1: [ // Monday - fresh start
-        "Ready to start the week strong?",
-        "Feeling motivated for Monday?",
-        "Time to crush this week's goals?",
-        "Ready to make Monday count?",
-        "Want to get the week rolling with a run?"
+      ideas: [
+        { statement: "I came up with this great idea for", question: "What do you think about adding dark mode to the dashboard?", type: "idea" },
+        { statement: "I came up with this great idea for", question: "What do you think about automating the weekly report?", type: "idea" },
+        { statement: "I came up with this great idea for", question: "What do you think about a training plan tracker?", type: "idea" },
+        { statement: "I came up with this great idea for", question: "What do you think about a new feature on ProposalPulse?", type: "idea" }
       ],
-      2: [ // Tuesday - midweek momentum
-        "Midweek momentum building?",
-        "Ready to keep the week going?",
-        "Time for a solid training run?",
-        "Feeling the midweek energy?",
-        "Want to check off some tasks today?"
+      projects: [
+        { statement: "We could work on", question: "Should we focus on BidFolder today?", type: "project" },
+        { statement: "We could work on", question: "Should we push ProposalPulse forward?", type: "project" },
+        { statement: "We could work on", question: "Should we tackle the Pi dashboard?", type: "project" }
       ],
-      3: [ // Thursday - approaching weekend
-        "Almost to the weekend - ready to push?",
-        "Time to finish the week strong?",
-        "Feeling ready for a longer run?",
-        "Want to wrap up pending projects?",
-        "Ready to make Thursday count?"
+      training: [
+        { statement: "Training for R3", question: "Ready to run today?", type: "training" },
+        { statement: "Time for a long run", question: "Should we log some serious miles?", type: "training" },
+        { statement: "Recovery day", question: "Want an easy recovery run?", type: "training" }
       ],
-      4: [ // Friday - week wrap-up
-        "Ready to finish the week strong?",
-        "Time to wrap up this week's tasks?",
-        "Feeling the Friday energy?",
-        "Want to start the weekend with a win?",
-        "Ready to celebrate the week's wins?"
-      ],
-      5: [ // Saturday - weekend + long run
-        "Is today a long run day?",
-        "Ready for a weekend adventure?",
-        "Feeling strong for Saturday?",
-        "Time to log some serious miles?",
-        "Ready to enjoy the weekend?"
-      ],
-      6: [ // Sunday - rest + reflection
-        "Ready for an easy recovery run?",
-        "Time to reflect on the week?",
-        "Feeling rested and ready?",
-        "Want to set up next week for success?",
-        "Ready to enjoy a relaxed Sunday?"
-      ]
+      daySpecific: {
+        0: [ // Sunday
+          { statement: "Planning the week", question: "Ready to plan the week ahead?", type: "task" },
+          { statement: "Reflecting on the week", question: "Want to review this week's goals?", type: "task" }
+        ],
+        1: [ // Monday
+          { statement: "Fresh start Monday", question: "Ready to start the week strong?", type: "task" },
+          { statement: "Monday motivation", question: "Feeling motivated for Monday?", type: "task" }
+        ],
+        5: [ // Saturday
+          { statement: "Weekend long run", question: "Is today a long run day?", type: "training" },
+          { statement: "Saturday adventure", question: "Ready for a weekend trail run?", type: "training" }
+        ],
+        6: [ // Sunday
+          { statement: "Recovery day", question: "Ready for an easy recovery run?", type: "training" },
+          { statement: "Reflection", question: "Time to reflect on the week?", type: "task" }
+        ]
+      }
     };
     
-    const projectQuestions = [
-      "Time to work on BidFolder?",
-      "Ready to push ProposalPulse forward?",
-      "Want to make progress on the Pi dashboard?",
-      "Time to tackle that LinkedIn post?",
-      "Ready to do some cold outreach?",
-      "Want to record that demo video?",
-      "Time to build something cool?",
-      "Ready to check off a task?"
-    ];
-    
-    let currentQuestion = "";
+    let lastQA = null;
     
     function setBackgroundImage(category) {
       document.getElementById('bg-image').style.backgroundImage = 
@@ -429,28 +421,42 @@
     
     function loadQuestion() {
       const dayOfWeek = new Date().getDay();
-      const dayQ = dayQuestions[dayOfWeek] || dayQuestions[0];
+      const rand = Math.random();
       
-      // Mix of day-specific and project questions (70% day, 30% project)
       let pool;
-      if (Math.random() < 0.7) {
-        pool = dayQ;
+      
+      // 30% day-specific, 30% tasks, 20% ideas, 10% projects, 10% training
+      if (rand < 0.3 && qaPool.daySpecific[dayOfWeek]) {
+        pool = qaPool.daySpecific[dayOfWeek];
+      } else if (rand < 0.6) {
+        pool = qaPool.tasks;
+      } else if (rand < 0.8) {
+        pool = qaPool.ideas;
+      } else if (rand < 0.9) {
+        pool = qaPool.projects;
       } else {
-        pool = projectQuestions;
+        pool = qaPool.training;
       }
       
-      let newQuestion = pool[Math.floor(Math.random() * pool.length)];
+      // Pick random, avoid repeats
+      let qa;
+      do {
+        qa = pool[Math.floor(Math.random() * pool.length)];
+      } while (qa === lastQA && pool.length > 1);
       
-      window.currentQuestion = newQuestion;
-      document.getElementById('qa-question').textContent = window.currentQuestion;
-      console.log('Question loaded:', window.currentQuestion);
+      lastQA = qa;
+      window.currentQA = qa;
+      
+      document.getElementById('qa-statement').innerHTML = 
+        `${qa.statement} <span class="qa-statement-highlight">${qa.question.split('?')[0]}?</span>`;
+      document.getElementById('qa-question').textContent = qa.question;
     }
     
     updateTime();
     updateDaysUntil();
     loadBalance();
     loadWeather();
-    setTimeout(loadQuestion, 100); // Small delay to ensure DOM is ready
+    setTimeout(loadQuestion, 100);
     
     setTimeout(() => location.reload(), 30000);
     setInterval(updateTime, 1000);
