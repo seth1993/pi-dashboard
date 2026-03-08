@@ -258,13 +258,24 @@
           dayOfWeek: timestamp.getDay(),
           hour: timestamp.getHours()
         });
-        console.log('Answer saved:', { question, answer, timestamp });
+        
+        // Visual feedback
+        const btn = event.target;
+        const originalText = btn.textContent;
+        btn.textContent = 'SAVED!';
+        btn.style.background = answer === 'yes' ? 'rgba(46, 204, 113, 0.4)' : 'rgba(231, 76, 60, 0.4)';
+        
+        setTimeout(() => {
+          btn.textContent = originalText;
+          btn.style.background = '';
+        }, 1000);
+        
+        // Load next question
+        loadQuestion();
       } catch(e) {
         console.error('Error saving answer:', e);
+        alert('Error saving: ' + e.message);
       }
-      
-      // Load next question
-      loadQuestion();
     };
   </script>
   
