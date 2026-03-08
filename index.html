@@ -34,7 +34,7 @@
       top: 0;
       width: 35%;
       height: 100%;
-      background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #1a1a2e 100%);
+      background: linear-gradient(180deg, #0d1117 0%, #161b22 50%, #1a1a2e 100%);
       z-index: 1;
     }
     
@@ -54,7 +54,7 @@
       z-index: 2;
       min-height: 100vh;
       padding: 40px;
-      background: linear-gradient(90deg, rgba(10,10,15,0.92) 0%, rgba(10,10,15,0.7) 60%, transparent 100%);
+      background: linear-gradient(90deg, rgba(10,10,15,0.92) 0%, rgba(10,10,15,0.6) 50%, transparent 100%);
     }
     
     .container { 
@@ -67,27 +67,25 @@
     }
     
     /* Big time - huge, no AM/PM */
+    .time-section {
+      margin-bottom: 40px;
+    }
+    
     .big-time { 
-      font-size: 12rem; 
+      font-size: 14rem; 
       font-weight: 100;
-      line-height: 1;
-      background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.6) 100%);
+      line-height: 0.9;
+      background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.5) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
     
-    .greeting {
-      font-size: 2rem;
-      color: rgba(255,255,255,0.5);
-      margin-top: 20px;
-    }
-    
-    /* Stats row */
+    /* Stats in a row */
     .stats-row {
       display: flex;
-      gap: 60px;
-      margin-top: 60px;
+      gap: 80px;
+      align-items: flex-start;
     }
     
     .stat {
@@ -95,17 +93,17 @@
     }
     
     .stat-value {
-      font-size: 5rem;
+      font-size: 4.5rem;
       font-weight: bold;
       line-height: 1;
     }
     
     .stat-label {
-      font-size: 1rem;
+      font-size: 0.85rem;
       text-transform: uppercase;
       letter-spacing: 3px;
       color: rgba(255,255,255,0.4);
-      margin-top: 10px;
+      margin-top: 8px;
     }
     
     .stat.days .stat-value {
@@ -116,11 +114,56 @@
       color: var(--owl-yellow);
     }
     
-    .emoji {
+    /* Weather stat */
+    .stat.weather .stat-value {
+      font-size: 3rem;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .weather-icon {
+      font-size: 4rem;
+      line-height: 1;
+    }
+    
+    .weather-temp {
+      font-size: 4.5rem;
+      font-weight: bold;
+    }
+    
+    /* On My Mind */
+    .on-my-mind {
+      margin-top: 50px;
+      padding: 25px 30px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+      max-width: 700px;
+    }
+    
+    .on-my-mind-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: rgba(255,255,255,0.3);
+      margin-bottom: 10px;
+    }
+    
+    .on-my-mind-text {
+      font-size: 1.6rem;
+      color: rgba(255,255,255,0.85);
+      font-style: italic;
+      line-height: 1.4;
+    }
+    
+    /* Owl */
+    .owl {
       position: absolute;
       bottom: 40px;
-      left: 40px;
-      font-size: 5rem;
+      right: 40px;
+      font-size: 6rem;
+      opacity: 0.6;
     }
     
     /* Mobile */
@@ -128,10 +171,13 @@
       .background-gradient { width: 50%; }
       .background-image { width: 50%; }
       .overlay { background: rgba(10,10,15,0.85); padding: 20px; }
-      .big-time { font-size: 6rem; }
-      .greeting { font-size: 1.5rem; }
-      .stats-row { flex-direction: column; gap: 30px; margin-top: 40px; }
-      .stat-value { font-size: 3.5rem; }
+      .big-time { font-size: 7rem; }
+      .stats-row { flex-direction: column; gap: 30px; margin-top: 30px; }
+      .stat-value { font-size: 3rem; }
+      .weather-temp { font-size: 3rem; }
+      .weather-icon { font-size: 3rem; }
+      .on-my-mind { margin-top: 30px; padding: 20px; }
+      .on-my-mind-text { font-size: 1.3rem; }
     }
   </style>
 </head>
@@ -145,10 +191,11 @@
   <div class="overlay">
     <div class="container">
       <!-- Big Time -->
-      <div class="big-time" id="time"></div>
-      <div class="greeting">Seth & Kare 💕</div>
+      <div class="time-section">
+        <div class="big-time" id="time"></div>
+      </div>
       
-      <!-- Stats -->
+      <!-- Stats row -->
       <div class="stats-row">
         <div class="stat days">
           <div class="stat-value" id="days-until">--</div>
@@ -159,10 +206,24 @@
           <div class="stat-value" id="balance">$0</div>
           <div class="stat-label">LLM Balance</div>
         </div>
+        
+        <div class="stat weather">
+          <div class="stat-value">
+            <span class="weather-icon" id="weather-icon">--</span>
+            <span class="weather-temp" id="weather-temp">--</span>
+          </div>
+          <div class="stat-label">Weather</div>
+        </div>
+      </div>
+      
+      <!-- On My Mind -->
+      <div class="on-my-mind">
+        <div class="on-my-mind-label">On My Mind</div>
+        <div class="on-my-mind-text" id="on-my-mind">Loading...</div>
       </div>
     </div>
     
-    <div class="emoji">🦉</div>
+    <div class="owl">🦉</div>
   </div>
   
   <script>
@@ -177,10 +238,40 @@
       6: 'travel'
     };
     
+    // Weather to static.photos mapping + icons
+    const weatherMap = {
+      'Sunny': { icon: '☀️', category: 'sunset' },
+      'Partly cloudy': { icon: '⛅', category: 'clouds' },
+      'Cloudy': { icon: '☁️', category: 'clouds' },
+      'Overcast': { icon: '☁️', category: 'clouds' },
+      'Mist': { icon: '🌫️', category: 'clouds' },
+      'Patchy rain possible': { icon: '🌦️', category: 'rain' },
+      'Patchy light rain': { icon: '🌧️', category: 'rain' },
+      'Light rain': { icon: '🌧️', category: 'rain' },
+      'Moderate rain': { icon: '🌧️', category: 'rain' },
+      'Heavy rain': { icon: '⛈️', category: 'rain' },
+      'Thunderstorm': { icon: '⛈️', category: 'rain' },
+      'Snow': { icon: '❄️', category: 'snow' },
+      'Blizzard': { icon: '🌨️', category: 'snow' },
+      'Fog': { icon: '🌫️', category: 'clouds' }
+    };
+    
+    // On my mind options (fallback)
+    const onMyMindOptions = [
+      "Thinking about the next R3 training run",
+      "Ready to crush today's goals",
+      "Considering a longer run tomorrow",
+      "Grateful for this trail system",
+      "Planning the week ahead",
+      "Just taking it one mile at a time",
+      "Visualizing crossing that finish line",
+      "Staying present, staying strong",
+      "Every step counts toward May 9th",
+      "Today is a good day to run"
+    ];
+    
     // === BACKGROUND IMAGE ===
-    function setBackgroundImage() {
-      const dayOfWeek = new Date().getDay();
-      const category = dayCategoryMap[dayOfWeek] || 'nature';
+    function setBackgroundImage(category) {
       document.getElementById('bg-image').style.backgroundImage = 
         `url('https://static.photos/1920x1080/${category}')`;
     }
@@ -190,8 +281,7 @@
       const now = new Date();
       const hours = now.getHours();
       const minutes = now.getMinutes();
-      const hour24 = hours; // 24-hour format
-      const timeStr = `${hour24}:${minutes.toString().padStart(2, '0')}`;
+      const timeStr = `${hours}:${minutes.toString().padStart(2, '0')}`;
       document.getElementById('time').textContent = timeStr;
     }
     
@@ -214,11 +304,59 @@
       } catch(e) { console.log('Balance:', e.message); }
     }
     
+    // === ON MY MIND ===
+    async function loadOnMyMind() {
+      try {
+        const res = await fetch('https://raw.githubusercontent.com/seth1993/pi-dashboard/main/tasks.json', { cache: 'no-cache' });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.onMyMind && data.onMyMind.trim() !== '') {
+            document.getElementById('on-my-mind').textContent = data.onMyMind;
+            return;
+          }
+        }
+      } catch(e) { console.log('onMyMind:', e.message); }
+      
+      // Fallback
+      const dayIndex = new Date().getDay();
+      const index = (dayIndex + Math.floor(Math.random() * 3)) % onMyMindOptions.length;
+      document.getElementById('on-my-mind').textContent = onMyMindOptions[index];
+    }
+    
+    // === WEATHER (CURRENT + VISUAL) ===
+    function loadWeather() {
+      fetch('https://wttr.in/?format=j1')
+        .then(r => r.json())
+        .then(d => {
+          const w = d.current_condition[0];
+          const tempF = Math.round(w.temp_F);
+          const weatherDesc = w.weatherDesc[0].value;
+          
+          // Get weather mapping
+          let weatherInfo = weatherMap[weatherDesc] || { icon: '🌤️', category: 'nature' };
+          
+          // Update UI
+          document.getElementById('weather-icon').textContent = weatherInfo.icon;
+          document.getElementById('weather-temp').textContent = tempF + '°';
+          
+          // Set background to weather-relevant image
+          setBackgroundImage(weatherInfo.category);
+        })
+        .catch(() => {
+          // Fallback to day-based image on error
+          const dayOfWeek = new Date().getDay();
+          setBackgroundImage(dayCategoryMap[dayOfWeek] || 'nature');
+          document.getElementById('weather-icon').textContent = '🌤️';
+          document.getElementById('weather-temp').textContent = '--';
+        });
+    }
+    
     // === INIT ===
-    setBackgroundImage();
     updateTime();
     updateDaysUntil();
     loadBalance();
+    loadOnMyMind();
+    loadWeather();
     
     // Auto-refresh
     setTimeout(() => location.reload(), 30000);
