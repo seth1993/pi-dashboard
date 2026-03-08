@@ -10,11 +10,6 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
-    /* Emoji font fallback */
-    body, .emoji, .weather-icon {
-      font-family: 'Noto Color Emoji', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    }
-    
     :root {
       --owl-yellow: #f0b429;
     }
@@ -74,7 +69,7 @@
       justify-content: center;
     }
     
-    /* Big time - huge, no AM/PM */
+    /* Big time */
     .time-section {
       margin-bottom: 40px;
     }
@@ -141,32 +136,65 @@
       font-weight: bold;
     }
     
-    /* On My Mind */
-    .on-my-mind {
+    /* Interactive Q&A Section */
+    .qa-section {
       margin-top: 50px;
-      padding: 25px 30px;
-      background: rgba(255,255,255,0.05);
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,0.08);
-      max-width: 700px;
+      max-width: 900px;
     }
     
-    .on-my-mind-label {
-      font-size: 0.7rem;
+    .qa-question {
+      font-size: 3.5rem;
+      font-weight: 300;
+      line-height: 1.2;
+      color: rgba(255,255,255,0.9);
+      margin-bottom: 30px;
+    }
+    
+    .qa-buttons {
+      display: flex;
+      gap: 30px;
+    }
+    
+    .qa-btn {
+      padding: 25px 60px;
+      font-size: 2rem;
+      font-weight: bold;
       text-transform: uppercase;
-      letter-spacing: 2px;
-      color: rgba(255,255,255,0.3);
-      margin-bottom: 10px;
+      letter-spacing: 3px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.05);
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-width: 200px;
     }
     
-    .on-my-mind-text {
-      font-size: 1.6rem;
-      color: rgba(255,255,255,0.85);
-      font-style: italic;
-      line-height: 1.4;
+    .qa-btn:hover {
+      background: rgba(255,255,255,0.15);
+      border-color: rgba(255,255,255,0.6);
+      transform: translateY(-2px);
     }
     
-    /* Owl - text only */
+    .qa-btn.yes {
+      border-color: rgba(46, 204, 113, 0.5);
+    }
+    
+    .qa-btn.yes:hover {
+      background: rgba(46, 204, 113, 0.2);
+      border-color: #2ecc71;
+    }
+    
+    .qa-btn.no {
+      border-color: rgba(231, 76, 60, 0.5);
+    }
+    
+    .qa-btn.no:hover {
+      background: rgba(231, 76, 60, 0.2);
+      border-color: #e74c3c;
+    }
+    
+    /* Owl */
     .owl {
       position: absolute;
       bottom: 40px;
@@ -186,9 +214,10 @@
       .stats-row { flex-direction: column; gap: 30px; margin-top: 30px; }
       .stat-value { font-size: 3rem; }
       .weather-temp { font-size: 3rem; }
-      .weather-icon { font-size: 3rem; }
-      .on-my-mind { margin-top: 30px; padding: 20px; }
-      .on-my-mind-text { font-size: 1.3rem; }
+      .qa-section { margin-top: 30px; }
+      .qa-question { font-size: 2rem; }
+      .qa-buttons { flex-direction: column; gap: 15px; }
+      .qa-btn { padding: 20px 40px; font-size: 1.5rem; min-width: auto; }
     }
   </style>
 </head>
@@ -227,10 +256,13 @@
         </div>
       </div>
       
-      <!-- On My Mind -->
-      <div class="on-my-mind">
-        <div class="on-my-mind-label">On My Mind</div>
-        <div class="on-my-mind-text" id="on-my-mind">Loading...</div>
+      <!-- Interactive Q&A -->
+      <div class="qa-section">
+        <div class="qa-question" id="qa-question">Loading...</div>
+        <div class="qa-buttons">
+          <button class="qa-btn yes" onclick="answerQuestion('yes')">Yes</button>
+          <button class="qa-btn no" onclick="answerQuestion('no')">No</button>
+        </div>
       </div>
     </div>
     
@@ -267,19 +299,27 @@
       'Fog': { text: 'FOG', category: 'clouds' }
     };
     
-    // On my mind options (fallback)
-    const onMyMindOptions = [
-      "Thinking about the next R3 training run",
-      "Ready to crush today's goals",
-      "Considering a longer run tomorrow",
-      "Grateful for this trail system",
-      "Planning the week ahead",
-      "Just taking it one mile at a time",
-      "Visualizing crossing that finish line",
-      "Staying present, staying strong",
-      "Every step counts toward May 9th",
-      "Today is a good day to run"
+    // Q&A Questions pool
+    const questions = [
+      "Ready to crush it today?",
+      "Feeling motivated to run?",
+      "Is today a long run day?",
+      "Got your running shoes on?",
+      "Ready to beat yesterday?",
+      "Feeling strong today?",
+      "Time to push harder?",
+      "Ready for the trail?",
+      "In the zone today?",
+      "Ready to go the distance?",
+      "Got the energy?",
+      "Ready to make it count?",
+      "Feeling adventurous?",
+      "Ready to log some miles?",
+      "In it to win it?"
     ];
+    
+    let currentQuestion = "";
+    let answersHistory = [];
     
     // === BACKGROUND IMAGE ===
     function setBackgroundImage(category) {
@@ -287,7 +327,7 @@
         `url('https://static.photos/1920x1080/${category}')`;
     }
     
-    // === TIME (NO AM/PM) ===
+    // === TIME (24H) ===
     function updateTime() {
       const now = new Date();
       const hours = now.getHours();
@@ -315,26 +355,7 @@
       } catch(e) { console.log('Balance:', e.message); }
     }
     
-    // === ON MY MIND ===
-    async function loadOnMyMind() {
-      try {
-        const res = await fetch('https://raw.githubusercontent.com/seth1993/pi-dashboard/main/tasks.json', { cache: 'no-cache' });
-        if (res.ok) {
-          const data = await res.json();
-          if (data.onMyMind && data.onMyMind.trim() !== '') {
-            document.getElementById('on-my-mind').textContent = data.onMyMind;
-            return;
-          }
-        }
-      } catch(e) { console.log('onMyMind:', e.message); }
-      
-      // Fallback
-      const dayIndex = new Date().getDay();
-      const index = (dayIndex + Math.floor(Math.random() * 3)) % onMyMindOptions.length;
-      document.getElementById('on-my-mind').textContent = onMyMindOptions[index];
-    }
-    
-    // === WEATHER (CURRENT + TEXT) ===
+    // === WEATHER ===
     function loadWeather() {
       fetch('https://wttr.in/?format=j1')
         .then(r => r.json())
@@ -343,18 +364,13 @@
           const tempF = Math.round(w.temp_F);
           const weatherDesc = w.weatherDesc[0].value;
           
-          // Get weather mapping
           let weatherInfo = weatherMap[weatherDesc] || { text: 'CLEAR', category: 'nature' };
           
-          // Update UI - text only
           document.getElementById('weather-icon').textContent = weatherInfo.text;
           document.getElementById('weather-temp').textContent = tempF + '°';
-          
-          // Set background to weather-relevant image
           setBackgroundImage(weatherInfo.category);
         })
         .catch(() => {
-          // Fallback to day-based image on error
           const dayOfWeek = new Date().getDay();
           setBackgroundImage(dayCategoryMap[dayOfWeek] || 'nature');
           document.getElementById('weather-icon').textContent = 'CLEAR';
@@ -362,12 +378,41 @@
         });
     }
     
+    // === Q&A ===
+    function loadQuestion() {
+      // Pick a random question different from current
+      let newQuestion;
+      do {
+        newQuestion = questions[Math.floor(Math.random() * questions.length)];
+      } while (newQuestion === currentQuestion && questions.length > 1);
+      
+      currentQuestion = newQuestion;
+      document.getElementById('qa-question').textContent = currentQuestion;
+    }
+    
+    async function answerQuestion(answer) {
+      // Record answer
+      const response = {
+        question: currentQuestion,
+        answer: answer,
+        timestamp: new Date().toISOString()
+      };
+      
+      answersHistory.push(response);
+      
+      // For now, log to console and show next question
+      console.log('Answer recorded:', response);
+      
+      // Load next question
+      loadQuestion();
+    }
+    
     // === INIT ===
     updateTime();
     updateDaysUntil();
     loadBalance();
-    loadOnMyMind();
     loadWeather();
+    loadQuestion();
     
     // Auto-refresh
     setTimeout(() => location.reload(), 30000);
