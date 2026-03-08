@@ -6,203 +6,563 @@
   <title>Juan's Dashboard</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --bg-dark: #0a0a0f;
+      --accent: #58a6ff;
+      --owl-yellow: #f0b429;
+      --gradient-end: #1a1a2e;
+    }
+    
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg-dark);
       min-height: 100vh;
       color: #fff;
-      padding: 20px;
     }
-    .container { max-width: 1200px; margin: 0 auto; }
-    header {
-      text-align: center;
-      margin-bottom: 30px;
-      padding: 20px;
-    }
-    header h1 { font-size: 2.5rem; margin-bottom: 5px; }
-    header .emoji { font-size: 3rem; }
-    .time { color: #888; font-size: 1.2rem; }
     
+    /* Background: 30% gradient, 70% image */
+    .background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+    
+    .background-gradient {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 35%;
+      height: 100%;
+      background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #1a1a2e 100%);
+      z-index: 1;
+    }
+    
+    .background-image {
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 65%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      z-index: 0;
+    }
+    
+    .overlay {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      padding: 30px;
+      background: linear-gradient(90deg, rgba(10,10,15,0.92) 0%, rgba(10,10,15,0.7) 60%, transparent 100%);
+    }
+    
+    .container { 
+      max-width: 1400px; 
+      margin: 0 auto; 
+      min-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    /* Big time - top left */
+    .time-header {
+      position: absolute;
+      top: 30px;
+      left: 30px;
+    }
+    
+    .big-time { 
+      font-size: 6rem; 
+      font-weight: 200;
+      letter-spacing: -2px;
+      line-height: 1;
+      background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.7) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .greeting {
+      font-size: 1.5rem;
+      color: rgba(255,255,255,0.5);
+      margin-top: 10px;
+    }
+    
+    /* On My Mind - big sentence */
+    .on-my-mind {
+      margin-top: 20px;
+      padding: 20px 25px;
+      background: rgba(240, 180, 41, 0.15);
+      border-left: 4px solid var(--owl-yellow);
+      border-radius: 0 12px 12px 0;
+      max-width: 600px;
+    }
+    
+    .on-my-mind-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--owl-yellow);
+      margin-bottom: 8px;
+    }
+    
+    .on-my-mind-text {
+      font-size: 1.4rem;
+      color: rgba(255,255,255,0.9);
+      font-style: italic;
+    }
+    
+    /* Run Training Section */
+    .run-training {
+      margin-top: 30px;
+      padding: 20px 25px;
+      background: rgba(88, 166, 255, 0.1);
+      border-radius: 12px;
+      border: 1px solid rgba(88, 166, 255, 0.2);
+      max-width: 500px;
+    }
+    
+    .run-training-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    
+    .run-icon {
+      font-size: 1.5rem;
+    }
+    
+    .run-training h3 {
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--accent);
+    }
+    
+    .r3-goal {
+      font-size: 1.1rem;
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 10px;
+    }
+    
+    .run-stats {
+      display: flex;
+      gap: 30px;
+    }
+    
+    .run-stat {
+      text-align: center;
+    }
+    
+    .run-stat-value {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: var(--accent);
+    }
+    
+    .run-stat-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: rgba(255,255,255,0.4);
+    }
+    
+    .days-until {
+      color: #f39c12;
+    }
+    
+    /* Main grid */
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 25px;
+      margin-top: 50px;
     }
     
     .card {
-      background: rgba(255,255,255,0.05);
-      border-radius: 15px;
-      padding: 20px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 30px 25px;
+      text-align: center;
+      border: 1px solid rgba(255,255,255,0.08);
       backdrop-filter: blur(10px);
     }
+    
     .card h2 {
-      font-size: 1rem;
-      color: #888;
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.4);
       margin-bottom: 15px;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 2px;
     }
-    .card-content { font-size: 1.1rem; }
     
+    .card-content { font-size: 2rem; font-weight: bold; }
+    
+    /* Quote */
     .quote { 
-      font-style: italic; 
-      font-size: 1.3rem; 
-      text-align: center;
-      padding: 20px;
+      font-size: 1.4rem; 
+      line-height: 1.4;
+      font-style: italic;
+      color: rgba(255,255,255,0.85);
     }
     .quote .author {
       display: block;
-      margin-top: 10px;
-      color: #888;
+      margin-top: 15px;
+      color: var(--owl-yellow);
       font-size: 1rem;
+      font-style: normal;
     }
     
-    .balance { font-size: 2rem; font-weight: bold; text-align: center; }
-    .balance .label { font-size: 0.9rem; color: #888; }
-    
-    .projects ul { list-style: none; }
-    .projects li {
-      padding: 10px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
+    /* Balance */
+    .balance { 
+      color: var(--owl-yellow);
+      font-size: 2.5rem;
     }
-    .projects li:last-child { border-bottom: none; }
-    .status {
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      margin-right: 10px;
+    .balance .label { 
+      font-size: 0.8rem; 
+      color: rgba(255,255,255,0.4);
+      display: block;
+      margin-top: 5px;
+      font-weight: normal;
     }
-    .status.inbox { background: #f39c12; }
-    .status.in_progress { background: #3498db; }
-    .status.in_review { background: #9b59b6; }
-    .status.done { background: #2ecc71; }
     
-    .stats { display: flex; justify-content: space-around; text-align: center; }
-    .stat .value { font-size: 1.5rem; font-weight: bold; }
-    .stat .label { color: #888; font-size: 0.8rem; }
+    /* Weather */
+    .weather .temp { 
+      font-size: 4rem; 
+      font-weight: 200;
+    }
+    .weather .desc { 
+      color: rgba(255,255,255,0.6); 
+      font-size: 1.2rem;
+      margin-top: 5px;
+    }
     
-    .weather { text-align: center; }
-    .weather .temp { font-size: 3rem; }
-    .weather .desc { color: #888; }
+    /* Tasks row */
+    .tasks-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 25px;
+      margin-top: 25px;
+    }
+    
+    .task-card {
+      background: rgba(255,255,255,0.04);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+    }
+    
+    .task-stat { 
+      font-size: 3rem; 
+      font-weight: bold;
+    }
+    .task-label { 
+      font-size: 0.75rem; 
+      color: rgba(255,255,255,0.4);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    #tasks-total { color: var(--accent); }
+    #tasks-done { color: #2ecc71; }
+    #tasks-pending { color: #f39c12; }
+    
+    /* Bottom area */
+    .footer {
+      position: absolute;
+      bottom: 30px;
+      left: 30px;
+      right: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .emoji { 
+      font-size: 4rem; 
+      text-shadow: 0 0 40px rgba(240, 180, 41, 0.4);
+    }
+    
+    /* Mobile */
+    @media (max-width: 900px) {
+      .background-gradient { width: 50%; }
+      .background-image { width: 50%; }
+      .overlay { background: rgba(10,10,15,0.85); }
+      .big-time { font-size: 4rem; }
+      .grid { grid-template-columns: 1fr; gap: 15px; }
+      .tasks-row { grid-template-columns: 1fr; }
+      .time-header { position: relative; top: 0; left: 0; margin-bottom: 30px; }
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <div class="emoji">🦉</div>
-      <h1>Juan's Dashboard</h1>
-      <div class="time" id="time"></div>
-    </header>
+  <!-- Background layers -->
+  <div class="background">
+    <div class="background-gradient"></div>
+    <div class="background-image" id="bg-image"></div>
+  </div>
+  
+  <div class="overlay">
+    <div class="container">
+      <!-- Big Time - Top Left -->
+      <div class="time-header">
+        <div class="big-time" id="time"></div>
+        <div class="greeting">Hello, Seth & Kare! 💕</div>
+        
+        <!-- On My Mind -->
+        <div class="on-my-mind">
+          <div class="on-my-mind-label">On My Mind</div>
+          <div class="on-my-mind-text" id="on-my-mind">Loading...</div>
+        </div>
+        
+        <!-- Run Training -->
+        <div class="run-training">
+          <div class="run-training-header">
+            <span class="run-icon">🏃</span>
+            <h3>Training for R3</h3>
+          </div>
+          <div class="r3-goal">Rim to Rim to Rim — May 9, 2026</div>
+          <div class="run-stats">
+            <div class="run-stat">
+              <div class="run-stat-value days-until" id="days-until">--</div>
+              <div class="run-stat-label">Days to Go</div>
+            </div>
+            <div class="run-stat">
+              <div class="run-stat-value" id="current-run">3.5</div>
+              <div class="run-stat-label">Current (mi)</div>
+            </div>
+            <div class="run-stat">
+              <div class="run-stat-value" id="target-run">--</div>
+              <div class="run-stat-label">Today's Plan</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Main Cards -->
+      <div class="grid">
+        <div class="card">
+          <h2>Inspiration</h2>
+          <div class="card-content quote" id="quote">
+            Loading...
+          </div>
+        </div>
+        
+        <div class="card">
+          <h2>LLM Balance</h2>
+          <div class="card-content balance">
+            <span id="balance">$0.00</span>
+            <span class="label">MiniMax</span>
+          </div>
+        </div>
+        
+        <div class="card">
+          <h2>Weather</h2>
+          <div class="card-content weather" id="weather">
+            <div class="temp">--°</div>
+            <div class="desc">Loading...</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Tasks -->
+      <div class="tasks-row">
+        <div class="task-card">
+          <div class="task-stat" id="tasks-total">-</div>
+          <div class="task-label">Total Tasks</div>
+        </div>
+        <div class="task-card">
+          <div class="task-stat" id="tasks-done" style="color: #2ecc71;">-</div>
+          <div class="task-label">Done</div>
+        </div>
+        <div class="task-card">
+          <div class="task-stat" id="tasks-pending" style="color: #f39c12;">-</div>
+          <div class="task-label">Pending</div>
+        </div>
+      </div>
+    </div>
     
-    <div class="grid">
-      <div class="card">
-        <h2>Inspiration</h2>
-        <div class="card-content quote" id="quote">
-          Loading...
-        </div>
-      </div>
-      
-      <div class="card">
-        <h2>LLM Balance</h2>
-        <div class="card-content balance">
-          <div class="label">MiniMax</div>
-          <span id="balance">$0.00</span>
-        </div>
-      </div>
-      
-      <div class="card">
-        <h2>Weather</h2>
-        <div class="card-content weather" id="weather">
-          Loading...
-        </div>
-      </div>
-      
-      <div class="card projects">
-        <h2>Active Projects</h2>
-        <ul id="projects">
-          <li><span class="status inbox"></span>Loading...</li>
-        </ul>
-      </div>
-      
-      <div class="card">
-        <h2>Quick Stats</h2>
-        <div class="stats">
-          <div class="stat">
-            <div class="value" id="tasks-total">0</div>
-            <div class="label">Total Tasks</div>
-          </div>
-          <div class="stat">
-            <div class="value" id="tasks-done">0</div>
-            <div class="label">Done</div>
-          </div>
-          <div class="stat">
-            <div class="value" id="tasks-pending">0</div>
-            <div class="label">Pending</div>
-          </div>
-        </div>
-      </div>
+    <!-- Footer -->
+    <div class="footer">
+      <div class="emoji">🦉</div>
     </div>
   </div>
   
   <script>
-    // Auto-refresh every 30 seconds
-    setTimeout(() => location.reload(), 30000);
-    
-    // Update time
-    document.getElementById('time').textContent = new Date().toLocaleString();
-    
-    // Quotes
-    const quotes = [
-      { text: "The best way to predict the future is to create it.", author: "Peter Drucker" },
-      { text: "Simplicity is the ultimate sophistication.", author: "Leonardo da Vinci" },
-      { text: "Code is like humor. When you have to explain it, it's bad.", author: "Cory House" },
-      { text: "First, solve the problem. Then, write the code.", author: "John Johnson" },
-      { text: "Experience is the name everyone gives to their mistakes.", author: "Oscar Wilde" },
-      { text: "The only way to do great work is to love what you do.", author: "Steve Jobs" }
+    // === CONFIGURATION ===
+    // static.photos categories (46 total)
+    const imageCategories = [
+      'nature', 'food', 'technology', 'business', 'sports', 'animals',
+      'architecture', 'art', 'fashion', 'music', 'travel', 'ocean',
+      'mountains', 'forest', 'beach', 'city', 'street', 'night',
+      'sunset', 'sunrise', 'sky', 'flowers', 'trees', 'water',
+      'fire', 'winter', 'summer', 'spring', 'autumn', 'rain',
+      'snow', 'clouds', 'desert', 'jungle', 'space', 'cars',
+      'bikes', 'boats', 'planes', 'trains', 'people', 'work',
+      'home', 'garden', 'food', 'drinks'
     ];
-    const q = quotes[Math.floor(Math.random() * quotes.length)];
-    document.getElementById('quote').innerHTML = `"${q.text}"<span class="author">— ${q.author}</span>`;
     
-    // Fetch data from GitHub raw (placeholder - Seth will need to create these files)
-    async function loadData() {
-      try {
-        // These would be JSON files in the repo
-        const balanceRes = await fetch('https://raw.githubusercontent.com/SethBailey/pi-dashboard/main/balance.json', { cache: 'no-cache' });
-        const balance = await balanceRes.json();
-        document.getElementById('balance').textContent = '$' + balance.minimax.toFixed(2);
-        
-        const tasksRes = await fetch('https://raw.githubusercontent.com/SethBailey/pi-dashboard/main/tasks.json', { cache: 'no-cache' });
-        const tasks = await tasksRes.json();
-        
-        document.getElementById('tasks-total').textContent = tasks.total;
-        document.getElementById('tasks-done').textContent = tasks.done;
-        document.getElementById('tasks-pending').textContent = tasks.pending;
-        
-        const projectsList = document.getElementById('projects');
-        projectsList.innerHTML = tasks.projects.map(p => 
-          `<li><span class="status ${p.status}"></span>${p.name}</li>`
-        ).join('');
-      } catch(e) {
-        console.log('Data files not yet set up');
+    // Day-of-week to category mapping
+    const dayCategoryMap = {
+      0: 'nature',      // Sunday - nature
+      1: 'mountains',  // Monday - mountains
+      2: 'ocean',      // Tuesday - ocean
+      3: 'city',       // Wednesday - city
+      4: 'forest',     // Thursday - forest
+      5: 'beach',      // Friday - beach
+      6: 'travel'      // Saturday - travel
+    };
+    
+    // Running-themed quotes
+    const runningQuotes = [
+      { text: "The miracle isn't that I finished. The miracle is that I had the courage to start.", author: "John Bingham" },
+      { text: "Run when you can, walk if you have to, crawl if you must; just never give up.", author: "Dean Karnazes" },
+      { text: "Running is nothing more than a series of arguments between the part of your brain that wants to stop and the part that wants to keep going.", author: "Unknown" },
+      { text: "The only one who can tell you 'you can't' is you. And you don't have to listen.", author: "Nike" },
+      { text: "It's very hard in the beginning to understand that the whole idea is not to beat the other runners. Eventually you learn that the competition is against the little voice inside you that wants you to quit.", author: "George Sheehan" },
+      { text: "Someone who is busier than you is running right now.", author: "Unknown" },
+      { text: "The pain of discipline is nothing like the pain of disappointment.", author: "Justin Langer" },
+      { text: "Run like there's a hot guy in front of you and a creepy one behind you.", author: "Unknown" },
+      { text: "Your body can stand almost anything. It's your mind you have to convince.", author: "Unknown" },
+      { text: "The miracle isn't that I finished. The miracle is that I had the courage to start.", author: "John Bingham" }
+    ];
+    
+    // On my mind options
+    const onMyMindOptions = [
+      "Thinking about the next R3 training run",
+      "Ready to crush today's goals",
+      "Considering a longer run tomorrow",
+      "Grateful for this trail system",
+      "Planning the week ahead",
+      "Just taking it one mile at a time",
+      "Visualizing crossing that finish line",
+      "Staying present, staying strong",
+      "Every step counts toward May 9th",
+      "Today is a good day to run"
+    ];
+    
+    // Calculate training plan
+    function getTrainingPlan() {
+      const r3Date = new Date('2026-05-09');
+      const today = new Date();
+      const daysUntil = Math.ceil((r3Date - today) / (1000 * 60 * 60 * 24));
+      
+      // Simple progression: start at 3.5, build by 0.2-0.5 per week
+      const weeksUntil = Math.floor(daysUntil / 7);
+      let targetRun = 3.5;
+      
+      // Build up gradually
+      if (weeksUntil > 0) {
+        targetRun = Math.min(3.5 + (weeksUntil * 0.3), 15); // Cap at 15 miles
       }
+      
+      return {
+        daysUntil: daysUntil,
+        targetRun: targetRun.toFixed(1)
+      };
     }
     
-    // Weather (wttr.in)
-    fetch('https://wttr.in/?format=j1')
-      .then(r => r.json())
-      .then(d => {
-        const w = d.current_condition[0];
-        document.getElementById('weather').innerHTML = `
-          <div class="temp">${w.temp_C}°C</div>
-          <div class="desc">${w.weatherDesc[0].value}</div>
-        `;
-      })
-      .catch(() => {
-        document.getElementById('weather').innerHTML = '<div class="desc">Weather unavailable</div>';
-      });
+    // === SETUP BACKGROUND IMAGE ===
+    function setBackgroundImage() {
+      const dayOfWeek = new Date().getDay();
+      const category = dayCategoryMap[dayOfWeek] || 'nature';
+      const imageUrl = `https://static.photos/1920x1080/${category}`;
+      document.getElementById('bg-image').style.backgroundImage = `url('${imageUrl}')`;
+    }
     
-    loadData();
+    // === UPDATE TIME (BIG, NO DATE) ===
+    function updateTime() {
+      const now = new Date();
+      const hours = now.getHours();
+      const minutes = now.getMinutes();
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      const hour12 = hours % 12 || 12;
+      const timeStr = `${hour12}:${minutes.toString().padStart(2, '0')} ${ampm}`;
+      document.getElementById('time').textContent = timeStr;
+    }
+    
+    // === SET QUOTE (RUNNING THEMED) ===
+    function setQuote() {
+      const q = runningQuotes[Math.floor(Math.random() * runningQuotes.length)];
+      document.getElementById('quote').innerHTML = `"${q.text}"<span class="author">— ${q.author}</span>`;
+    }
+    
+    // === SET "ON MY MIND" ===
+    function setOnMyMind() {
+      // Pick based on day for variety
+      const dayIndex = new Date().getDay();
+      const index = (dayIndex + Math.floor(Math.random() * 3)) % onMyMindOptions.length;
+      document.getElementById('on-my-mind').textContent = onMyMindOptions[index];
+    }
+    
+    // === UPDATE RUN TRAINING ===
+    function updateRunTraining() {
+      const training = getTrainingPlan();
+      document.getElementById('days-until').textContent = training.daysUntil;
+      document.getElementById('current-run').textContent = '3.5';
+      document.getElementById('target-run').textContent = training.targetRun;
+    }
+    
+    // === FETCH BALANCE ===
+    async function loadBalance() {
+      try {
+        const res = await fetch('https://raw.githubusercontent.com/seth1993/pi-dashboard/main/balance.json', { cache: 'no-cache' });
+        if (res.ok) {
+          const data = await res.json();
+          document.getElementById('balance').textContent = '$' + data.minimax.toFixed(2);
+        }
+      } catch(e) { console.log('Balance:', e.message); }
+    }
+    
+    // === FETCH TASKS ===
+    async function loadTasks() {
+      try {
+        const res = await fetch('https://raw.githubusercontent.com/seth1993/pi-dashboard/main/tasks.json', { cache: 'no-cache' });
+        if (res.ok) {
+          const data = await res.json();
+          document.getElementById('tasks-total').textContent = data.total || '-';
+          document.getElementById('tasks-done').textContent = data.done || '-';
+          document.getElementById('tasks-pending').textContent = data.pending || '-';
+        }
+      } catch(e) { console.log('Tasks:', e.message); }
+    }
+    
+    // === WEATHER ===
+    function loadWeather() {
+      fetch('https://wttr.in/?format=j1')
+        .then(r => r.json())
+        .then(d => {
+          const w = d.current_condition[0];
+          const tempF = Math.round(w.temp_F);
+          document.getElementById('weather').innerHTML = `
+            <div class="temp">${tempF}°</div>
+            <div class="desc">${w.weatherDesc[0].value}</div>
+          `;
+        })
+        .catch(() => {
+          document.getElementById('weather').innerHTML = '<div class="desc">--</div>';
+        });
+    }
+    
+    // === INIT ===
+    setBackgroundImage();
+    updateTime();
+    setQuote();
+    setOnMyMind();
+    updateRunTraining();
+    loadBalance();
+    loadTasks();
+    loadWeather();
+    
+    // Auto-refresh
+    setTimeout(() => location.reload(), 30000);
+    setInterval(updateTime, 1000);
   </script>
 </body>
 </html>
