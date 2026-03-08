@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Juan's Dashboard</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      min-height: 100vh;
+      color: #fff;
+      padding: 20px;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 20px;
+    }
+    header h1 { font-size: 2.5rem; margin-bottom: 5px; }
+    header .emoji { font-size: 3rem; }
+    .time { color: #888; font-size: 1.2rem; }
+    
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    
+    .card {
+      background: rgba(255,255,255,0.05);
+      border-radius: 15px;
+      padding: 20px;
+      backdrop-filter: blur(10px);
+    }
+    .card h2 {
+      font-size: 1rem;
+      color: #888;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .card-content { font-size: 1.1rem; }
+    
+    .quote { 
+      font-style: italic; 
+      font-size: 1.3rem; 
+      text-align: center;
+      padding: 20px;
+    }
+    .quote .author {
+      display: block;
+      margin-top: 10px;
+      color: #888;
+      font-size: 1rem;
+    }
+    
+    .balance { font-size: 2rem; font-weight: bold; text-align: center; }
+    .balance .label { font-size: 0.9rem; color: #888; }
+    
+    .projects ul { list-style: none; }
+    .projects li {
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .projects li:last-child { border-bottom: none; }
+    .status {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+    .status.inbox { background: #f39c12; }
+    .status.in_progress { background: #3498db; }
+    .status.in_review { background: #9b59b6; }
+    .status.done { background: #2ecc71; }
+    
+    .stats { display: flex; justify-content: space-around; text-align: center; }
+    .stat .value { font-size: 1.5rem; font-weight: bold; }
+    .stat .label { color: #888; font-size: 0.8rem; }
+    
+    .weather { text-align: center; }
+    .weather .temp { font-size: 3rem; }
+    .weather .desc { color: #888; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="emoji">🦉</div>
+      <h1>Juan's Dashboard</h1>
+      <div class="time" id="time"></div>
+    </header>
+    
+    <div class="grid">
+      <div class="card">
+        <h2>Inspiration</h2>
+        <div class="card-content quote" id="quote">
+          Loading...
+        </div>
+      </div>
+      
+      <div class="card">
+        <h2>LLM Balance</h2>
+        <div class="card-content balance">
+          <div class="label">MiniMax</div>
+          <span id="balance">$0.00</span>
+        </div>
+      </div>
+      
+      <div class="card">
+        <h2>Weather</h2>
+        <div class="card-content weather" id="weather">
+          Loading...
+        </div>
+      </div>
+      
+      <div class="card projects">
+        <h2>Active Projects</h2>
+        <ul id="projects">
+          <li><span class="status inbox"></span>Loading...</li>
+        </ul>
+      </div>
+      
+      <div class="card">
+        <h2>Quick Stats</h2>
+        <div class="stats">
+          <div class="stat">
+            <div class="value" id="tasks-total">0</div>
+            <div class="label">Total Tasks</div>
+          </div>
+          <div class="stat">
+            <div class="value" id="tasks-done">0</div>
+            <div class="label">Done</div>
+          </div>
+          <div class="stat">
+            <div class="value" id="tasks-pending">0</div>
+            <div class="label">Pending</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Auto-refresh every 30 seconds
+    setTimeout(() => location.reload(), 30000);
+    
+    // Update time
+    document.getElementById('time').textContent = new Date().toLocaleString();
+    
+    // Quotes
+    const quotes = [
+      { text: "The best way to predict the future is to create it.", author: "Peter Drucker" },
+      { text: "Simplicity is the ultimate sophistication.", author: "Leonardo da Vinci" },
+      { text: "Code is like humor. When you have to explain it, it's bad.", author: "Cory House" },
+      { text: "First, solve the problem. Then, write the code.", author: "John Johnson" },
+      { text: "Experience is the name everyone gives to their mistakes.", author: "Oscar Wilde" },
+      { text: "The only way to do great work is to love what you do.", author: "Steve Jobs" }
+    ];
+    const q = quotes[Math.floor(Math.random() * quotes.length)];
+    document.getElementById('quote').innerHTML = `"${q.text}"<span class="author">— ${q.author}</span>`;
+    
+    // Fetch data from GitHub raw (placeholder - Seth will need to create these files)
+    async function loadData() {
+      try {
+        // These would be JSON files in the repo
+        const balanceRes = await fetch('https://raw.githubusercontent.com/SethBailey/pi-dashboard/main/balance.json', { cache: 'no-cache' });
+        const balance = await balanceRes.json();
+        document.getElementById('balance').textContent = '$' + balance.minimax.toFixed(2);
+        
+        const tasksRes = await fetch('https://raw.githubusercontent.com/SethBailey/pi-dashboard/main/tasks.json', { cache: 'no-cache' });
+        const tasks = await tasksRes.json();
+        
+        document.getElementById('tasks-total').textContent = tasks.total;
+        document.getElementById('tasks-done').textContent = tasks.done;
+        document.getElementById('tasks-pending').textContent = tasks.pending;
+        
+        const projectsList = document.getElementById('projects');
+        projectsList.innerHTML = tasks.projects.map(p => 
+          `<li><span class="status ${p.status}"></span>${p.name}</li>`
+        ).join('');
+      } catch(e) {
+        console.log('Data files not yet set up');
+      }
+    }
+    
+    // Weather (wttr.in)
+    fetch('https://wttr.in/?format=j1')
+      .then(r => r.json())
+      .then(d => {
+        const w = d.current_condition[0];
+        document.getElementById('weather').innerHTML = `
+          <div class="temp">${w.temp_C}°C</div>
+          <div class="desc">${w.weatherDesc[0].value}</div>
+        `;
+      })
+      .catch(() => {
+        document.getElementById('weather').innerHTML = '<div class="desc">Weather unavailable</div>';
+      });
+    
+    loadData();
+  </script>
+</body>
+</html>
