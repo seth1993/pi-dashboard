@@ -125,10 +125,17 @@
       font-weight: 300;
       color: rgba(255,255,255,0.5);
       margin-bottom: 10px;
+      font-style: italic;
     }
     
     .qa-statement-highlight {
       color: var(--owl-yellow);
+    }
+    
+    .qa-task {
+      font-size: 1.5rem;
+      color: var(--owl-yellow);
+      margin-bottom: 15px;
     }
     
     .qa-question {
@@ -190,6 +197,7 @@
       .weather-temp { font-size: 3rem; }
       .qa-section { margin-top: 30px; }
       .qa-statement { font-size: 1.5rem; }
+      .qa-task { font-size: 1.2rem; }
       .qa-question { font-size: 2rem; }
       .qa-buttons { flex-direction: column; gap: 15px; }
       .qa-btn { padding: 20px 40px; font-size: 1.5rem; min-width: auto; }
@@ -228,6 +236,7 @@
       
       <div class="qa-section">
         <div class="qa-statement" id="qa-statement"></div>
+        <div class="qa-task" id="qa-task"></div>
         <div class="qa-question" id="qa-question">Loading...</div>
         <div class="qa-buttons">
           <button class="qa-btn yes" id="btn-yes">Yes</button>
@@ -259,25 +268,21 @@
     window.currentQA = null;
     
     window.answerQuestion = async function(answer) {
-      if (!window.currentQA) {
-        alert('No question loaded');
-        return;
-      }
+      if (!window.currentQA) return;
       
       const timestamp = new Date();
       
       try {
         await addDoc(collection(db, 'responses'), {
           statement: window.currentQA.statement,
+          task: window.currentQA.task,
           question: window.currentQA.question,
-          type: window.currentQA.type,
           answer: answer,
           timestamp: timestamp.toISOString(),
           dayOfWeek: timestamp.getDay(),
           hour: timestamp.getHours()
         });
         
-        // Visual feedback
         const btn = event.target;
         const originalText = btn.textContent;
         btn.textContent = 'SAVED!';
@@ -290,12 +295,10 @@
         }, 800);
         
       } catch(e) {
-        console.error('Error saving:', e);
-        alert('Error: ' + e.message);
+        console.error('Error:', e);
       }
     };
     
-    // Attach click handlers
     document.getElementById('btn-yes').onclick = () => window.answerQuestion('yes');
     document.getElementById('btn-no').onclick = () => window.answerQuestion('no');
   </script>
@@ -323,53 +326,52 @@
       'Fog': { text: 'FOG', category: 'clouds' }
     };
     
-    // Q&A Pool from skill
-    const qaPool = {
-      tasks: [
-        { statement: "I need help with", question: "Can you help me with BidFolder outreach?", type: "task" },
-        { statement: "I need help with", question: "Can you help me finalize the ProposalPulse landing page?", type: "task" },
-        { statement: "I need help with", question: "Can you help me set up analytics for the dashboard?", type: "task" },
-        { statement: "I need help with", question: "Can you help me write a cold email template?", type: "task" },
-        { statement: "I need help with", question: "Can you help me review this code?", type: "task" },
-        { statement: "I need help with", question: "Can you help me plan next week's tasks?", type: "task" }
-      ],
-      ideas: [
-        { statement: "I came up with this great idea for", question: "What do you think about adding dark mode to the dashboard?", type: "idea" },
-        { statement: "I came up with this great idea for", question: "What do you think about automating the weekly report?", type: "idea" },
-        { statement: "I came up with this great idea for", question: "What do you think about a training plan tracker?", type: "idea" },
-        { statement: "I came up with this great idea for", question: "What do you think about a new feature on ProposalPulse?", type: "idea" }
-      ],
-      projects: [
-        { statement: "We could work on", question: "Should we focus on BidFolder today?", type: "project" },
-        { statement: "We could work on", question: "Should we push ProposalPulse forward?", type: "project" },
-        { statement: "We could work on", question: "Should we tackle the Pi dashboard?", type: "project" }
-      ],
-      training: [
-        { statement: "Training for R3", question: "Ready to run today?", type: "training" },
-        { statement: "Time for a long run", question: "Should we log some serious miles?", type: "training" },
-        { statement: "Recovery day", question: "Want an easy recovery run?", type: "training" }
-      ],
-      daySpecific: {
-        0: [ // Sunday
-          { statement: "Planning the week", question: "Ready to plan the week ahead?", type: "task" },
-          { statement: "Reflecting on the week", question: "Want to review this week's goals?", type: "task" }
-        ],
-        1: [ // Monday
-          { statement: "Fresh start Monday", question: "Ready to start the week strong?", type: "task" },
-          { statement: "Monday motivation", question: "Feeling motivated for Monday?", type: "task" }
-        ],
-        5: [ // Saturday
-          { statement: "Weekend long run", question: "Is today a long run day?", type: "training" },
-          { statement: "Saturday adventure", question: "Ready for a weekend trail run?", type: "training" }
-        ],
-        6: [ // Sunday
-          { statement: "Recovery day", question: "Ready for an easy recovery run?", type: "training" },
-          { statement: "Reflection", question: "Time to reflect on the week?", type: "task" }
-        ]
-      }
-    };
+    // FUN STATEMENTS - Juan's personality
+    const statements = [
+      "Hoo's ready for some action?",
+      "The owl is watching... and waiting",
+      "Wise owl wisdom incoming",
+      "Coffee-powered, code-driven",
+      "Your favorite night-owl engineer",
+      "Hoo can I help you today?",
+      "Running on caffeine and ambition",
+      "The network never sleeps (neither do I)",
+      "Ready to crush some tasks?",
+      "Your personal productivity wingman",
+      "The wise owl has spoken",
+      "Let's make some magic happen"
+    ];
     
-    let lastQA = null;
+    // QUESTIONS tied to ClawDeck tasks
+    const questions = [
+      "Want me to start working on {task}?",
+      "Should I tackle {task} now?",
+      "Time to make progress on {task}?",
+      "Ready to dive into {task}?",
+      "Want me to figure out {task}?",
+      "Should I get started on {task}?",
+      "Ready to knock out {task}?",
+      "Want me to work on {task}?"
+    ];
+    
+    // TASKS from ClawDeck / projects
+    const tasks = [
+      "BidFolder outreach",
+      "ProposalPulse landing page",
+      "Pi dashboard updates",
+      "LinkedIn post",
+      "Cold email template",
+      "Demo video",
+      "Analytics setup",
+      "Customer interview",
+      "Case study",
+      "Weekly planning",
+      "GitHub issues",
+      "Code review"
+    ];
+    
+    let lastStatement = null;
+    let lastCombo = null;
     
     function setBackgroundImage(category) {
       document.getElementById('bg-image').style.backgroundImage = 
@@ -396,7 +398,7 @@
           const data = await res.json();
           document.getElementById('balance').textContent = '$' + Math.floor(data.minimax);
         }
-      } catch(e) { console.log('Balance:', e.message); }
+      } catch(e) {}
     }
     
     function loadWeather() {
@@ -420,36 +422,29 @@
     }
     
     function loadQuestion() {
-      const dayOfWeek = new Date().getDay();
-      const rand = Math.random();
-      
-      let pool;
-      
-      // 30% day-specific, 30% tasks, 20% ideas, 10% projects, 10% training
-      if (rand < 0.3 && qaPool.daySpecific[dayOfWeek]) {
-        pool = qaPool.daySpecific[dayOfWeek];
-      } else if (rand < 0.6) {
-        pool = qaPool.tasks;
-      } else if (rand < 0.8) {
-        pool = qaPool.ideas;
-      } else if (rand < 0.9) {
-        pool = qaPool.projects;
-      } else {
-        pool = qaPool.training;
-      }
-      
-      // Pick random, avoid repeats
-      let qa;
+      // Pick random statement (avoid repeats)
+      let statement;
       do {
-        qa = pool[Math.floor(Math.random() * pool.length)];
-      } while (qa === lastQA && pool.length > 1);
+        statement = statements[Math.floor(Math.random() * statements.length)];
+      } while (statement === lastStatement && statements.length > 1);
+      lastStatement = statement;
       
-      lastQA = qa;
-      window.currentQA = qa;
+      // Pick random task + question combo (avoid repeats)
+      let task, question, combo;
+      do {
+        task = tasks[Math.floor(Math.random() * tasks.length)];
+        const questionTemplate = questions[Math.floor(Math.random() * questions.length)];
+        question = questionTemplate.replace('{task}', task);
+        combo = task + '|' + question;
+      } while (combo === lastCombo && tasks.length > 1);
+      lastCombo = combo;
+      
+      window.currentQA = { statement, task, question };
       
       document.getElementById('qa-statement').innerHTML = 
-        `${qa.statement} <span class="qa-statement-highlight">${qa.question.split('?')[0]}?</span>`;
-      document.getElementById('qa-question').textContent = qa.question;
+        `<span class="qa-statement-highlight">${statement}</span>`;
+      document.getElementById('qa-task').textContent = task;
+      document.getElementById('qa-question').textContent = question;
     }
     
     updateTime();
