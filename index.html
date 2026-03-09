@@ -77,24 +77,6 @@
       background-clip: text;
     }
     
-    /* Dark mode (10pm - 6am) */
-    body.dark-mode .big-time {
-      background: linear-gradient(135deg, #58a6ff 0%, rgba(88, 166, 255, 0.5) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    
-    body.dark-mode .qa-statement-highlight,
-    body.dark-mode .qa-task,
-    body.dark-mode .stat.balance .stat-value {
-      color: #58a6ff;
-    }
-    
-    body.dark-mode .stat.days .stat-value {
-      color: #a371f7;
-    }
-    
     .stats-row {
       display: flex;
       gap: 80px;
@@ -103,107 +85,33 @@
     }
     
     .stat { text-align: left; }
-    
-    .stat-value {
-      font-size: 4.5rem;
-      font-weight: bold;
-      line-height: 1;
-    }
-    
-    .stat-label {
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 3px;
-      color: rgba(255,255,255,0.4);
-      margin-top: 8px;
-    }
-    
+    .stat-value { font-size: 4.5rem; font-weight: bold; line-height: 1; }
+    .stat-label { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 3px; color: rgba(255,255,255,0.4); margin-top: 8px; }
     .stat.days .stat-value { color: #f39c12; }
     .stat.balance .stat-value { color: var(--owl-yellow); }
+    .weather-text { font-size: 1.5rem; font-weight: 500; letter-spacing: 2px; color: rgba(255,255,255,0.7); }
+    .weather-temp { font-size: 4.5rem; font-weight: bold; }
     
-    .weather-text {
-      font-size: 1.5rem;
-      font-weight: 500;
-      letter-spacing: 2px;
-      color: rgba(255,255,255,0.7);
-    }
+    .qa-section { margin-top: 50px; max-width: 900px; }
+    .qa-statement { font-size: 2rem; font-weight: 300; color: rgba(255,255,255,0.5); margin-bottom: 10px; font-style: italic; }
+    .qa-statement-highlight { color: var(--owl-yellow); }
+    .qa-task { font-size: 1.5rem; color: var(--owl-yellow); margin-bottom: 15px; }
+    .qa-question { font-size: 3.5rem; font-weight: 300; line-height: 1.2; color: rgba(255,255,255,0.9); margin-bottom: 30px; }
     
-    .weather-temp {
-      font-size: 4.5rem;
-      font-weight: bold;
-    }
-    
-    .qa-section {
-      margin-top: 50px;
-      max-width: 900px;
-    }
-    
-    .qa-statement {
-      font-size: 2rem;
-      font-weight: 300;
-      color: rgba(255,255,255,0.5);
-      margin-bottom: 10px;
-      font-style: italic;
-    }
-    
-    .qa-statement-highlight {
-      color: var(--owl-yellow);
-    }
-    
-    .qa-task {
-      font-size: 1.5rem;
-      color: var(--owl-yellow);
-      margin-bottom: 15px;
-    }
-    
-    .qa-question {
-      font-size: 3.5rem;
-      font-weight: 300;
-      line-height: 1.2;
-      color: rgba(255,255,255,0.9);
-      margin-bottom: 30px;
-    }
-    
-    .qa-buttons {
-      display: flex;
-      gap: 30px;
-    }
-    
-    .qa-btn {
-      padding: 25px 60px;
-      font-size: 2rem;
-      font-weight: bold;
-      text-transform: uppercase;
-      letter-spacing: 3px;
-      border: 2px solid rgba(255,255,255,0.3);
-      border-radius: 12px;
-      background: rgba(255,255,255,0.05);
-      color: #fff;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      min-width: 200px;
-    }
-    
-    .qa-btn:hover {
-      background: rgba(255,255,255,0.15);
-      border-color: rgba(255,255,255,0.6);
-      transform: translateY(-2px);
-    }
-    
+    .qa-buttons { display: flex; gap: 30px; }
+    .qa-btn { padding: 25px 60px; font-size: 2rem; font-weight: bold; text-transform: uppercase; letter-spacing: 3px; border: 2px solid rgba(255,255,255,0.3); border-radius: 12px; background: rgba(255,255,255,0.05); color: #fff; cursor: pointer; transition: all 0.2s ease; min-width: 200px; }
+    .qa-btn:hover { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.6); transform: translateY(-2px); }
     .qa-btn.yes { border-color: rgba(46, 204, 113, 0.5); }
     .qa-btn.yes:hover { background: rgba(46, 204, 113, 0.2); border-color: #2ecc71; }
     .qa-btn.no { border-color: rgba(231, 76, 60, 0.5); }
     .qa-btn.no:hover { background: rgba(231, 76, 60, 0.2); border-color: #e74c3c; }
     
-    .owl {
-      position: absolute;
-      bottom: 40px;
-      right: 40px;
-      font-size: 2rem;
-      color: rgba(255,255,255,0.3);
-      letter-spacing: 5px;
-      text-transform: uppercase;
-    }
+    .owl { position: absolute; bottom: 40px; right: 40px; font-size: 2rem; color: rgba(255,255,255,0.3); letter-spacing: 5px; text-transform: uppercase; }
+    
+    /* Dark mode (10pm - 6am) */
+    body.dark-mode .big-time { background: linear-gradient(135deg, #58a6ff 0%, rgba(88, 166, 255, 0.5) 100%); -webkit-background-clip: text; background-clip: text; }
+    body.dark-mode .qa-statement-highlight, body.dark-mode .qa-task, body.dark-mode .stat.balance .stat-value { color: #58a6ff; }
+    body.dark-mode .stat.days .stat-value { color: #a371f7; }
     
     @media (max-width: 900px) {
       .background-gradient { width: 50%; }
@@ -233,23 +141,9 @@
       <div class="big-time" id="time"></div>
       
       <div class="stats-row">
-        <div class="stat days">
-          <div class="stat-value" id="days-until">--</div>
-          <div class="stat-label">Days to R3</div>
-        </div>
-        
-        <div class="stat balance">
-          <div class="stat-value" id="balance">$0</div>
-          <div class="stat-label">LLM Balance</div>
-        </div>
-        
-        <div class="stat weather">
-          <div class="stat-value">
-            <span class="weather-text" id="weather-icon">--</span>
-            <span class="weather-temp" id="weather-temp">--</span>
-          </div>
-          <div class="stat-label">Weather</div>
-        </div>
+        <div class="stat days"><div class="stat-value" id="days-until">--</div><div class="stat-label">Days to R3</div></div>
+        <div class="stat balance"><div class="stat-value" id="balance">$0</div><div class="stat-label">LLM Balance</div></div>
+        <div class="stat weather"><div class="stat-value"><span class="weather-text" id="weather-icon">--</span><span class="weather-temp" id="weather-temp">--</span></div><div class="stat-label">Weather</div></div>
       </div>
       
       <div class="qa-section">
@@ -282,14 +176,11 @@
     
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    
     window.currentQA = null;
     
     window.answerQuestion = async function(answer) {
       if (!window.currentQA) return;
-      
       const timestamp = new Date();
-      
       try {
         await addDoc(collection(db, 'responses'), {
           statement: window.currentQA.statement,
@@ -300,21 +191,16 @@
           dayOfWeek: timestamp.getDay(),
           hour: timestamp.getHours()
         });
-        
         const btn = event.target;
         const originalText = btn.textContent;
         btn.textContent = 'SAVED!';
         btn.style.background = answer === 'yes' ? 'rgba(46, 204, 113, 0.4)' : 'rgba(231, 76, 60, 0.4)';
-        
         setTimeout(() => {
           btn.textContent = originalText;
           btn.style.background = '';
           loadQuestion();
         }, 800);
-        
-      } catch(e) {
-        console.error('Error:', e);
-      }
+      } catch(e) { console.error('Error:', e); }
     };
     
     document.getElementById('btn-yes').onclick = () => window.answerQuestion('yes');
@@ -322,26 +208,24 @@
   </script>
   
   <script>
-    const dayCategoryMap = {
-      0: 'nature', 1: 'mountains', 2: 'ocean', 3: 'city',
-      4: 'forest', 5: 'beach', 6: 'travel'
-    };
+    // Fun images
+    const funImages = ['travel', 'adventure', 'mountains', 'ocean', 'forest', 'beach', 'street', 'architecture', 'nature', 'sunset'];
     
     const weatherMap = {
       'Sunny': { text: 'SUNNY', category: 'sunset' },
       'Partly cloudy': { text: 'PARTLY CLOUDY', category: 'clouds' },
       'Cloudy': { text: 'CLOUDY', category: 'clouds' },
       'Overcast': { text: 'OVERCAST', category: 'clouds' },
-      'Mist': { text: 'MIST', category: 'clouds' },
+      'Mist': { text: 'MIST', category: 'forest' },
       'Patchy rain possible': { text: 'RAIN', category: 'rain' },
       'Patchy light rain': { text: 'RAIN', category: 'rain' },
       'Light rain': { text: 'RAIN', category: 'rain' },
       'Moderate rain': { text: 'RAIN', category: 'rain' },
       'Heavy rain': { text: 'HEAVY RAIN', category: 'rain' },
       'Thunderstorm': { text: 'STORM', category: 'rain' },
-      'Snow': { text: 'SNOW', category: 'snow' },
-      'Blizzard': { text: 'BLIZZARD', category: 'snow' },
-      'Fog': { text: 'FOG', category: 'clouds' }
+      'Snow': { text: 'SNOW', category: 'winter' },
+      'Blizzard': { text: 'BLIZZARD', category: 'winter' },
+      'Fog': { text: 'FOG', category: 'forest' }
     };
     
     // FUN STATEMENTS - Juan's personality
@@ -391,29 +275,31 @@
     let lastStatement = null;
     let lastCombo = null;
     
+    function isDarkMode() {
+      const hour = new Date().getHours();
+      return hour >= 22 || hour < 6;
+    }
+    
     function setBackgroundImage(category) {
-      document.getElementById('bg-image').style.backgroundImage = 
-        `url('https://static.photos/1920x1080/${category}')`;
+      // 30% chance of fun random image
+      if (Math.random() < 0.3) {
+        category = funImages[Math.floor(Math.random() * funImages.length)];
+      }
+      document.getElementById('bg-image').style.backgroundImage = `url('https://static.photos/1920x1080/${category}')`;
     }
     
     function updateTime() {
       const now = new Date();
       const hours = now.getHours();
       const minutes = now.getMinutes();
-      document.getElementById('time').textContent = 
-        `${hours}:${minutes.toString().padStart(2, '0')}`;
-    }
-    
-    function isDarkMode() {
-      const hour = new Date().getHours();
-      return hour >= 22 || hour < 6; // 10pm - 6am
+      const hour12 = hours % 12 || 12;
+      document.getElementById('time').textContent = `${hour12}:${minutes.toString().padStart(2, '0')}`;
     }
     
     function updateDaysUntil() {
       const r3Date = new Date('2026-05-09');
       const today = new Date();
-      document.getElementById('days-until').textContent = 
-        Math.ceil((r3Date - today) / (1000 * 60 * 60 * 24));
+      document.getElementById('days-until').textContent = Math.ceil((r3Date - today) / (1000 * 60 * 60 * 24));
     }
     
     async function loadBalance() {
@@ -439,8 +325,7 @@
           setBackgroundImage(weatherInfo.category);
         })
         .catch(() => {
-          const dayOfWeek = new Date().getDay();
-          setBackgroundImage(dayCategoryMap[dayOfWeek] || 'nature');
+          setBackgroundImage('nature');
           document.getElementById('weather-icon').textContent = 'CLEAR';
           document.getElementById('weather-temp').textContent = '--';
         });
@@ -465,26 +350,25 @@
       lastCombo = combo;
       
       window.currentQA = { statement, task, question };
-      
-      document.getElementById('qa-statement').innerHTML = 
-        `<span class="qa-statement-highlight">${statement}</span>`;
+      document.getElementById('qa-statement').innerHTML = `<span class="qa-statement-highlight">${statement}</span>`;
       document.getElementById('qa-task').textContent = task;
       document.getElementById('qa-question').textContent = question;
     }
     
+    // Init
     updateTime();
     updateDaysUntil();
     loadBalance();
     loadWeather();
     
-    // Dark mode between 10pm and 6am
     if (isDarkMode()) {
       document.body.classList.add('dark-mode');
     }
     
     setTimeout(loadQuestion, 100);
     
-    setTimeout(() => location.reload(), 5 * 60 * 1000); // 5 minutes
+    // Refresh every 5 minutes
+    setTimeout(() => location.reload(), 5 * 60 * 1000);
     setInterval(updateTime, 1000);
   </script>
 </body>
