@@ -147,7 +147,6 @@
       </div>
       
       <div class="qa-section">
-        <div class="qa-statement" id="qa-statement"></div>
         <div class="qa-task" id="qa-task"></div>
         <div class="qa-question" id="qa-question">Loading...</div>
         <div class="qa-buttons">
@@ -332,13 +331,6 @@
     }
     
     function loadQuestion() {
-      // Pick random statement (avoid repeats)
-      let statement;
-      do {
-        statement = statements[Math.floor(Math.random() * statements.length)];
-      } while (statement === lastStatement && statements.length > 1);
-      lastStatement = statement;
-      
       // Pick random task + question combo (avoid repeats)
       let task, question, combo;
       do {
@@ -350,7 +342,6 @@
       lastCombo = combo;
       
       window.currentQA = { statement, task, question };
-      document.getElementById('qa-statement').innerHTML = `<span class="qa-statement-highlight">${statement}</span>`;
       document.getElementById('qa-task').textContent = task;
       document.getElementById('qa-question').textContent = question;
     }
