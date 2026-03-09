@@ -9,9 +9,7 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
-    :root {
-      --owl-yellow: #f0b429;
-    }
+    :root { --owl-yellow: #f0b429; }
     
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -33,7 +31,7 @@
       position: absolute;
       left: 0;
       top: 0;
-      width: 35%;
+      width: 30%;
       height: 100%;
       background: linear-gradient(180deg, #0d1117 0%, #161b22 50%, #1a1a2e 100%);
       z-index: 1;
@@ -43,7 +41,7 @@
       position: absolute;
       right: 0;
       top: 0;
-      width: 65%;
+      width: 70%;
       height: 100%;
       background-size: cover;
       background-position: center;
@@ -55,7 +53,7 @@
       z-index: 2;
       min-height: 100vh;
       padding: 40px;
-      background: linear-gradient(90deg, rgba(10,10,15,0.92) 0%, rgba(10,10,15,0.6) 50%, transparent 100%);
+      background: linear-gradient(90deg, rgba(10,10,15,0.95) 0%, rgba(10,10,15,0.7) 50%, transparent 100%);
     }
     
     .container { 
@@ -93,10 +91,9 @@
     .weather-temp { font-size: 4.5rem; font-weight: bold; }
     
     .qa-section { margin-top: 50px; max-width: 900px; }
-    .qa-statement { font-size: 2rem; font-weight: 300; color: rgba(255,255,255,0.5); margin-bottom: 10px; font-style: italic; }
-    .qa-statement-highlight { color: var(--owl-yellow); }
-    .qa-task { font-size: 1.5rem; color: var(--owl-yellow); margin-bottom: 15px; }
-    .qa-question { font-size: 3.5rem; font-weight: 300; line-height: 1.2; color: rgba(255,255,255,0.9); margin-bottom: 30px; }
+    .qa-statement { font-size: 2.5rem; font-weight: 300; color: rgba(255,255,255,0.9); margin-bottom: 15px; }
+    .qa-statement-highlight { color: var(--owl-yellow); font-weight: 500; }
+    .qa-question { font-size: 3rem; font-weight: 300; line-height: 1.2; color: rgba(255,255,255,0.7); margin-bottom: 30px; }
     
     .qa-buttons { display: flex; gap: 30px; }
     .qa-btn { padding: 25px 60px; font-size: 2rem; font-weight: bold; text-transform: uppercase; letter-spacing: 3px; border: 2px solid rgba(255,255,255,0.3); border-radius: 12px; background: rgba(255,255,255,0.05); color: #fff; cursor: pointer; transition: all 0.2s ease; min-width: 200px; }
@@ -108,22 +105,20 @@
     
     .owl { position: absolute; bottom: 40px; right: 40px; font-size: 2rem; color: rgba(255,255,255,0.3); letter-spacing: 5px; text-transform: uppercase; }
     
-    /* Dark mode (10pm - 6am) */
     body.dark-mode .big-time { background: linear-gradient(135deg, #58a6ff 0%, rgba(88, 166, 255, 0.5) 100%); -webkit-background-clip: text; background-clip: text; }
-    body.dark-mode .qa-statement-highlight, body.dark-mode .qa-task, body.dark-mode .stat.balance .stat-value { color: #58a6ff; }
+    body.dark-mode .qa-statement-highlight, body.dark-mode .stat.balance .stat-value { color: #58a6ff; }
     body.dark-mode .stat.days .stat-value { color: #a371f7; }
     
     @media (max-width: 900px) {
       .background-gradient { width: 50%; }
       .background-image { width: 50%; }
-      .overlay { background: rgba(10,10,15,0.85); padding: 20px; }
+      .overlay { background: rgba(10,10,15,0.9); padding: 20px; }
       .big-time { font-size: 7rem; }
       .stats-row { flex-direction: column; gap: 30px; margin-top: 30px; }
       .stat-value { font-size: 3rem; }
       .weather-temp { font-size: 3rem; }
       .qa-section { margin-top: 30px; }
-      .qa-statement { font-size: 1.5rem; }
-      .qa-task { font-size: 1.2rem; }
+      .qa-statement { font-size: 1.8rem; }
       .qa-question { font-size: 2rem; }
       .qa-buttons { flex-direction: column; gap: 15px; }
       .qa-btn { padding: 20px 40px; font-size: 1.5rem; min-width: auto; }
@@ -207,41 +202,48 @@
   </script>
   
   <script>
-    // Fun images
-    const funImages = ['travel', 'adventure', 'mountains', 'ocean', 'forest', 'beach', 'street', 'architecture', 'nature', 'sunset'];
+    // Fun image categories connected to statements
+    const funImageMap = {
+      'beach': { image: 'beach', statement: 'Feeling beach vibes today?' },
+      'mountains': { image: 'mountains', statement: 'Adventure awaits in the mountains!' },
+      'ocean': { image: 'ocean', statement: 'Time to ride the waves!' },
+      'travel': { image: 'travel', statement: 'Wanderlust is calling!' },
+      'sunset': { image: 'sunset', statement: 'Chasing beautiful sunsets!' },
+      'forest': { image: 'forest', statement: 'Lost in nature mode' },
+      'city': { image: 'city', statement: 'City lights, endless possibilities!' },
+      'street': { image: 'street', statement: 'Exploring new streets today' },
+      'architecture': { image: 'architecture', statement: 'Admiring the beautiful designs' },
+      'sports': { image: 'sports', statement: 'Game day energy!' },
+      'cars': { image: 'cars', statement: 'Fast cars, good times!' },
+      'bikes': { image: 'bikes', statement: 'Two wheels, free spirits!' },
+      'boats': { image: 'boats', statement: 'Sailing into the sunset!' },
+      'planes': { image: 'planes', statement: 'Sky is not the limit, just the view!' },
+      'nature': { image: 'nature', statement: 'Nature heals the soul' },
+      'animals': { image: 'animals', statement: 'Making friends with creatures great and small' },
+      'food': { image: 'food', statement: 'Good food, good mood!' },
+      'drinks': { image: 'drinks', statement: 'Cheers to good times!' },
+      'music': { image: 'music', statement: 'Dancing to my own beat!' },
+      'art': { image: 'art', statement: 'Creating something beautiful today' }
+    };
+    
+    const imageKeys = Object.keys(funImageMap);
     
     const weatherMap = {
       'Sunny': { text: 'SUNNY', category: 'sunset' },
-      'Partly cloudy': { text: 'PARTLY CLOUDY', category: 'clouds' },
-      'Cloudy': { text: 'CLOUDY', category: 'clouds' },
-      'Overcast': { text: 'OVERCAST', category: 'clouds' },
+      'Partly cloudy': { text: 'PARTLY CLOUDY', category: 'nature' },
+      'Cloudy': { text: 'CLOUDY', category: 'nature' },
+      'Overcast': { text: 'OVERCAST', category: 'forest' },
       'Mist': { text: 'MIST', category: 'forest' },
-      'Patchy rain possible': { text: 'RAIN', category: 'rain' },
-      'Patchy light rain': { text: 'RAIN', category: 'rain' },
-      'Light rain': { text: 'RAIN', category: 'rain' },
-      'Moderate rain': { text: 'RAIN', category: 'rain' },
-      'Heavy rain': { text: 'HEAVY RAIN', category: 'rain' },
-      'Thunderstorm': { text: 'STORM', category: 'rain' },
-      'Snow': { text: 'SNOW', category: 'winter' },
-      'Blizzard': { text: 'BLIZZARD', category: 'winter' },
+      'Patchy rain possible': { text: 'RAIN', category: 'forest' },
+      'Patchy light rain': { text: 'RAIN', category: 'forest' },
+      'Light rain': { text: 'RAIN', category: 'forest' },
+      'Moderate rain': { text: 'RAIN', category: 'forest' },
+      'Heavy rain': { text: 'HEAVY RAIN', category: 'forest' },
+      'Thunderstorm': { text: 'STORM', category: 'forest' },
+      'Snow': { text: 'SNOW', category: 'mountains' },
+      'Blizzard': { text: 'BLIZZARD', category: 'mountains' },
       'Fog': { text: 'FOG', category: 'forest' }
     };
-    
-    // FUN STATEMENTS - Juan's personality
-    const statements = [
-      "Hoo's ready for some action?",
-      "The owl is watching... and waiting",
-      "Wise owl wisdom incoming",
-      "Coffee-powered, code-driven",
-      "Your favorite night-owl engineer",
-      "Hoo can I help you today?",
-      "Running on caffeine and ambition",
-      "The network never sleeps (neither do I)",
-      "Ready to crush some tasks?",
-      "Your personal productivity wingman",
-      "The wise owl has spoken",
-      "Let's make some magic happen"
-    ];
     
     // QUESTIONS tied to ClawDeck tasks
     const questions = [
@@ -271,20 +273,34 @@
       "Code review"
     ];
     
-    let lastStatement = null;
     let lastCombo = null;
+    let lastImage = null;
     
     function isDarkMode() {
       const hour = new Date().getHours();
       return hour >= 22 || hour < 6;
     }
     
-    function setBackgroundImage(category) {
-      // 30% chance of fun random image
-      if (Math.random() < 0.3) {
-        category = funImages[Math.floor(Math.random() * funImages.length)];
+    function setBackgroundImage(fallbackCategory) {
+      // 70% fun random image, 30% weather-based
+      let category, statement;
+      
+      if (Math.random() < 0.7) {
+        // Pick fun image, avoid repeats
+        let key;
+        do {
+          key = imageKeys[Math.floor(Math.random() * imageKeys.length)];
+        } while (key === lastImage && imageKeys.length > 1);
+        lastImage = key;
+        category = funImageMap[key].image;
+        statement = funImageMap[key].statement;
+      } else {
+        category = fallbackCategory || 'nature';
+        statement = null;
       }
+      
       document.getElementById('bg-image').style.backgroundImage = `url('https://static.photos/1920x1080/${category}')`;
+      return statement;
     }
     
     function updateTime() {
@@ -321,7 +337,10 @@
           let weatherInfo = weatherMap[weatherDesc] || { text: 'CLEAR', category: 'nature' };
           document.getElementById('weather-icon').textContent = weatherInfo.text;
           document.getElementById('weather-temp').textContent = tempF + '°';
-          setBackgroundImage(weatherInfo.category);
+          const statement = setBackgroundImage(weatherInfo.category);
+          if (statement) {
+            window.imageStatement = statement;
+          }
         })
         .catch(() => {
           setBackgroundImage('nature');
@@ -331,12 +350,13 @@
     }
     
     function loadQuestion() {
-      // Pick random statement (fun Juan personality)
-      let statement;
-      do {
-        statement = statements[Math.floor(Math.random() * statements.length)];
-      } while (statement === lastStatement && statements.length > 1);
-      lastStatement = statement;
+      // Use image statement if available, otherwise pick random
+      let statement = window.imageStatement;
+      if (!statement) {
+        const keys = Object.keys(funImageMap);
+        const key = keys[Math.floor(Math.random() * keys.length)];
+        statement = funImageMap[key].statement;
+      }
       
       // Pick random task + question combo
       let task, question, combo;
@@ -364,8 +384,6 @@
     }
     
     setTimeout(loadQuestion, 100);
-    
-    // Refresh every 5 minutes
     setTimeout(() => location.reload(), 5 * 60 * 1000);
     setInterval(updateTime, 1000);
   </script>
