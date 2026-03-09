@@ -77,6 +77,24 @@
       background-clip: text;
     }
     
+    /* Dark mode (10pm - 6am) */
+    body.dark-mode .big-time {
+      background: linear-gradient(135deg, #58a6ff 0%, rgba(88, 166, 255, 0.5) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    body.dark-mode .qa-statement-highlight,
+    body.dark-mode .qa-task,
+    body.dark-mode .stat.balance .stat-value {
+      color: #58a6ff;
+    }
+    
+    body.dark-mode .stat.days .stat-value {
+      color: #a371f7;
+    }
+    
     .stats-row {
       display: flex;
       gap: 80px;
@@ -380,8 +398,17 @@
     
     function updateTime() {
       const now = new Date();
+      const hours = now.getHours();
+      const minutes = now.getMinutes();
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      const hour12 = hours % 12 || 12;
       document.getElementById('time').textContent = 
-        `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+        `${hour12}:${minutes.toString().padStart(2, '0')} ${ampm}`;
+    }
+    
+    function isDarkMode() {
+      const hour = new Date().getHours();
+      return hour >= 22 || hour < 6; // 10pm - 6am
     }
     
     function updateDaysUntil() {
@@ -451,9 +478,15 @@
     updateDaysUntil();
     loadBalance();
     loadWeather();
+    
+    // Dark mode between 10pm and 6am
+    if (isDarkMode()) {
+      document.body.classList.add('dark-mode');
+    }
+    
     setTimeout(loadQuestion, 100);
     
-    setTimeout(() => location.reload(), 30000);
+    setTimeout(() => location.reload(), 5 * 60 * 1000); // 5 minutes
     setInterval(updateTime, 1000);
   </script>
 </body>
