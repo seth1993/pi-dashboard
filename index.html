@@ -31,7 +31,7 @@
       position: absolute;
       left: 0;
       top: 0;
-      width: 30%;
+      width: 25%;
       height: 100%;
       background: linear-gradient(180deg, #0d1117 0%, #161b22 50%, #1a1a2e 100%);
       z-index: 1;
@@ -39,9 +39,9 @@
     
     .background-image {
       position: absolute;
-      right: 0;
+      left: 0;
       top: 0;
-      width: 70%;
+      width: 100%;
       height: 100%;
       background-size: cover;
       background-position: center;
@@ -103,7 +103,16 @@
     .qa-btn.no { border-color: rgba(231, 76, 60, 0.5); }
     .qa-btn.no:hover { background: rgba(231, 76, 60, 0.2); border-color: #e74c3c; }
     
-    .owl { position: absolute; bottom: 40px; right: 40px; font-size: 2rem; color: rgba(255,255,255,0.3); letter-spacing: 5px; text-transform: uppercase; }
+    .owl { position: absolute; bottom: 40px; right: 40px; font-size: 2rem; color: rgba(255,255,255,0.3); letter-spacing: 5px; }
+    .chess-btn { position: absolute; top: 40px; right: 40px; font-size: 3rem; cursor: pointer; opacity: 0.6; transition: opacity 0.2s; }
+    .chess-btn:hover { opacity: 1; }
+    .chess-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 100; }
+    .chess-modal.active { display: flex; align-items: center; justify-content: center; }
+    .chess-board { display: grid; grid-template-columns: repeat(8, 60px); grid-template-rows: repeat(8, 60px); border: 4px solid #8b4513; }
+    .chess-square { width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; cursor: pointer; }
+    .chess-square.white { background: #f0d9b5; }
+    .chess-square.black { background: #b58863; }
+    .chess-close { position: absolute; top: 20px; right: 20px; font-size: 2rem; color: white; cursor: pointer; }
     
     body.dark-mode .big-time { background: linear-gradient(135deg, #58a6ff 0%, rgba(88, 166, 255, 0.5) 100%); -webkit-background-clip: text; background-clip: text; }
     body.dark-mode .qa-statement-highlight, body.dark-mode .stat.balance .stat-value { color: #58a6ff; }
@@ -151,7 +160,13 @@
       </div>
     </div>
     
-    <div class="owl">🦉 THE OWL</div>
+    <div class="owl">🦉</div>
+    <div class="chess-btn" onclick="toggleChess()">♟️</div>
+    
+    <div class="chess-modal" id="chess-modal">
+      <div class="chess-close" onclick="toggleChess()">✕</div>
+      <div class="chess-board" id="chess-board"></div>
+    </div>
   </div>
   
   <!-- Firebase SDK -->
@@ -202,35 +217,40 @@
   </script>
   
   <script>
-    // Fun image categories connected to statements (with emojis!)
+    // Fun image categories - EXCITING & ADVENTUROUS!
     const funImageMap = {
-      'beach': { image: 'beach', statement: '🏖️ Feeling beach vibes today?' },
-      'mountains': { image: 'mountains', statement: '⛰️ Adventure awaits in the mountains!' },
-      'ocean': { image: 'ocean', statement: '🌊 Time to ride the waves!' },
-      'travel': { image: 'travel', statement: '✈️ Wanderlust is calling!' },
-      'sunset': { image: 'sunset', statement: '🌅 Chasing beautiful sunsets!' },
-      'forest': { image: 'forest', statement: '🌲 Lost in nature mode' },
-      'city': { image: 'city', statement: '🌃 City lights, endless possibilities!' },
-      'street': { image: 'street', statement: '🗺️ Exploring new streets today' },
-      'architecture': { image: 'architecture', statement: '🏛️ Admiring the beautiful designs' },
-      'sports': { image: 'sports', statement: '🏆 Game day energy!' },
-      'cars': { image: 'cars', statement: '🏎️ Fast cars, good times!' },
-      'bikes': { image: 'bikes', statement: '🚴 Two wheels, free spirits!' },
-      'boats': { image: 'boats', statement: '⛵ Sailing into the sunset!' },
-      'planes': { image: 'planes', statement: '🛫 Sky is not the limit, just the view!' },
-      'nature': { image: 'nature', statement: '🌿 Nature heals the soul' },
-      'animals': { image: 'animals', statement: '🐾 Making friends with creatures great and small' },
-      'food': { image: 'food', statement: '🍕 Good food, good mood!' },
-      'drinks': { image: 'drinks', statement: '🍹 Cheers to good times!' },
-      'music': { image: 'music', statement: '🎵 Dancing to my own beat!' },
-      'art': { image: 'art', statement: '🎨 Creating something beautiful today' },
-      'fire': { image: 'fire', statement: '🔥 Feeling the fire inside!' },
-      'water': { image: 'water', statement: '💧 Flowing like water' },
-      'space': { image: 'space', statement: '🚀 Shooting for the stars!' },
-      'flowers': { image: 'flowers', statement: '🌸 Blooming where I\'m planted' },
-      'trees': { image: 'trees', statement: '🌳 Rooted but reaching high' },
-      'night': { image: 'night', statement: '🌙 Night owl energy!' },
-      'sky': { image: 'sky', statement: '☁️ Dreaming big thoughts' }
+      'travel': { image: 'travel', statement: '✈️ Ready for an adventure?!' },
+      'mountains': { image: 'mountains', statement: '⛰️ Conquering peaks today!' },
+      'ocean': { image: 'ocean', statement: '🌊 Epic ocean vibes!' },
+      'beach': { image: 'beach', statement: '🏖️ Paradise mode activated!' },
+      'sunset': { image: 'sunset', statement: '🌅 Chasing sunsets!' },
+      'sunrise': { image: 'sunrise', statement: '🌞 New day, new possibilities!' },
+      'forest': { image: 'forest', statement: '🌲 Getting lost in nature!' },
+      'water': { image: 'water', statement: '💦 Making waves!' },
+      'fire': { image: 'fire', statement: '🔥 On fire today!' },
+      'sports': { image: 'sports', statement: '🏆 Champion mindset!' },
+      'cars': { image: 'cars', statement: '🏎️ Living life in the fast lane!' },
+      'bikes': { image: 'bikes', statement: '🚴 Speed and freedom!' },
+      'boats': { image: 'boats', statement: '⛵ Sailing to success!' },
+      'planes': { image: 'planes', statement: '🛫 Taking flight!' },
+      'trains': { image: 'trains', statement: '🚂 Choo choo, all aboard!' },
+      'space': { image: 'space', statement: '🚀 Reaching for the stars!' },
+      'city': { image: 'city', statement: '🌃 City that never sleeps!' },
+      'night': { image: 'night', statement: '🌙 Night owl, same!' },
+      'sky': { image: 'sky', statement: '☁️ Endless possibilities!' },
+      'architecture': { image: 'architecture', statement: '🏛️ Building dreams!' },
+      'art': { image: 'art', statement: '🎨 Creating magic!' },
+      'music': { image: 'music', statement: '🎵 Living my best life!' },
+      'food': { image: 'food', statement: '🍔 Fuel for greatness!' },
+      'drinks': { image: 'drinks', statement: '🥂 Celebrating wins!' },
+      'nature': { image: 'nature', statement: '🌿 Nature is healing!' },
+      'flowers': { image: 'flowers', statement: '🌸 Blooming beautifully!' },
+      'animals': { image: 'animals', statement: '🦁 King of the jungle!' },
+      'desert': { image: 'desert', statement: '🏜️ Adventures in the wild!' },
+      'jungle': { image: 'jungle', statement: '🌴 Wild and free!' },
+      'snow': { image: 'snow', statement: '❄️ Winter wonderland!' },
+      'clouds': { image: 'clouds', statement: '☁️ Dreaming big dreams!' },
+      'rain': { image: 'rain', statement: '🌧️ Growth through storms!' }
     };
     
     const imageKeys = Object.keys(funImageMap);
@@ -393,6 +413,60 @@
     setTimeout(loadQuestion, 100);
     setTimeout(() => location.reload(), 5 * 60 * 1000);
     setInterval(updateTime, 1000);
+    
+    // Chess game
+    const chessPieces = {
+      'r': '♜', 'n': '♞', 'b': '♝', 'q': '♛', 'k': '♚', 'p': '♟',
+      'R': '♖', 'N': '♘', 'B': '♗', 'Q': '♕', 'K': '♔', 'P': '♙'
+    };
+    
+    let chessBoard = [
+      ['r','n','b','q','k','b','n','r'],
+      ['p','p','p','p','p','p','p','p'],
+      ['','','','','','','',''],
+      ['','','','','','','',''],
+      ['','','','','','','',''],
+      ['','','','','','','',''],
+      ['P','P','P','P','P','P','P','P'],
+      ['R','N','B','Q','K','B','N','R']
+    ];
+    
+    function renderChess() {
+      const board = document.getElementById('chess-board');
+      board.innerHTML = '';
+      for (let row = 0; row < 8; row++) {
+        for (let col = 0; col < 8; col++) {
+          const square = document.createElement('div');
+          square.className = 'chess-square ' + ((row + col) % 2 === 0 ? 'white' : 'black');
+          const piece = chessBoard[row][col];
+          square.textContent = piece ? chessPieces[piece] : '';
+          square.onclick = () => movePiece(row, col);
+          board.appendChild(square);
+        }
+      }
+    }
+    
+    let selectedSquare = null;
+    
+    function movePiece(row, col) {
+      if (selectedSquare) {
+        chessBoard[row][col] = chessBoard[selectedSquare.row][selectedSquare.col];
+        chessBoard[selectedSquare.row][selectedSquare.col] = '';
+        selectedSquare = null;
+        renderChess();
+      } else {
+        if (chessBoard[row][col]) {
+          selectedSquare = { row, col };
+        }
+      }
+    }
+    
+    function toggleChess() {
+      document.getElementById('chess-modal').classList.toggle('active');
+      if (document.getElementById('chess-modal').classList.contains('active')) {
+        renderChess();
+      }
+    }
   </script>
 </body>
 </html>
